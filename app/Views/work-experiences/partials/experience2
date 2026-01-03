@@ -1,0 +1,569 @@
+<!-- Swiper CSS for Image Slider -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+<style>
+    .work-experience-card {
+        width: 50%;
+        min-height: 200px;
+        background: white;
+        border-radius: 30px;
+        box-shadow: 15px 15px 30px #bebebe, -15px -15px 30px #ffffff;
+        justify-content: space-between;
+        transition: 0.2s ease-in-out;
+        overflow: hidden;
+        border: none;
+    }
+
+    .work-experience-card:hover {
+        cursor: pointer;
+        box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .company-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        background: white;
+    }
+
+    .company-logo-placeholder {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .company-logo-placeholder i {
+        color: #9198e5;
+    }
+
+    .card-header-custom {
+        width: 100%;
+        height: 100px;
+        border-top-left-radius: 30px;
+        border-top-right-radius: 30px;
+        background: linear-gradient(135deg, #e66465, #9198e5);
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: 20px;
+        position: relative;
+        border: none;
+        margin-bottom: 0;
+    }
+
+    .company-name {
+        font-family: 'Nunito', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.25rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .position-title {
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .current-badge {
+        background: rgba(255, 255, 255, 0.9);
+        color: #9198e5;
+        padding: 0.4rem 0.8rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        transition: 0.2s ease-in-out;
+    }
+
+    .current-badge:hover {
+        transform: scale(1.05);
+    }
+
+    .card-body {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .period-info {
+        background: #e3fff9;
+        padding: 10px 15px;
+        border-radius: 10px;
+        margin-bottom: 0;
+    }
+
+    .period-text {
+        color: #9198e5;
+        font-size: 0.85rem;
+        font-weight: 500;
+        margin-bottom: 0;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    .description-text {
+        color: #666666;
+        line-height: 1.6;
+        font-size: 0.85rem;
+        font-family: 'Nunito', sans-serif;
+        margin-bottom: 0;
+    }
+
+    .skill-badge {
+        background: #9198e5;
+        color: white;
+        padding: 0.3rem 0.7rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        margin-right: 0.4rem;
+        margin-bottom: 0.4rem;
+        display: inline-block;
+        font-weight: 500;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    .skill-more-badge {
+        background: #e9ecef;
+        color: #6c757d;
+        padding: 0.3rem 0.7rem;
+        border-radius: 10px;
+        font-size: 0.75rem;
+        margin-right: 0.4rem;
+        margin-bottom: 0.4rem;
+        display: inline-block;
+        font-weight: 500;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    .documentation-slider {
+        height: 80px;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .documentation-slider img {
+        width: 100%;
+        height: 80px;
+        object-fit: cover;
+        cursor: pointer;
+    }
+
+    .swiper-pagination-bullet {
+        background: rgba(255, 255, 255, 0.5);
+        opacity: 1;
+    }
+
+    .swiper-pagination-bullet-active {
+        background: #9198e5;
+        opacity: 1;
+    }
+
+    .documentation-count {
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 0.3rem 0.6rem;
+        border-radius: 15px;
+        font-size: 0.75rem;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 10;
+    }
+
+    .action-buttons {
+        padding: 20px;
+        background: white;
+        border-bottom-left-radius: 30px;
+        border-bottom-right-radius: 30px;
+        margin-top: auto;
+    }
+
+    .btn-action {
+        border-radius: 10px;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        transition: 0.2s ease-in-out;
+        font-size: 0.85rem;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    .btn-detail {
+        background: #9198e5;
+        border: none;
+        color: white;
+    }
+
+    .btn-detail:hover {
+        transform: scale(1.05);
+        color: white;
+        box-shadow: 0 4px 10px rgba(145, 152, 229, 0.4);
+    }
+
+    .btn-edit {
+        background: #fff;
+        border: 2px solid #e9ecef;
+        color: #6c757d;
+    }
+
+    .btn-edit:hover {
+        background: #f8f9fa;
+        color: #495057;
+        transform: scale(1.05);
+    }
+
+    .btn-delete {
+        background: #fff;
+        border: 2px solid #dc3545;
+        color: #dc3545;
+    }
+
+    .btn-delete:hover {
+        background: #dc3545;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    .empty-state {
+        background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+    }
+
+    .empty-icon {
+        color: #667eea;
+        margin-bottom: 1.5rem;
+    }
+
+    .section-header {
+        margin-bottom: 2rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .page-subtitle {
+        color: #6c757d;
+        font-size: 1.1rem;
+    }
+
+    .add-btn {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        color: white;
+        padding: 0.8rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .add-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        color: white;
+    }
+</style>
+
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="section-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="page-title"><?= $title ?></h1>
+                    <p class="page-subtitle">Kelola dan tampilkan pengalaman kerja profesional Anda</p>
+                </div>
+                <a href="<?= base_url('work-experience/create') ?>" class="btn add-btn">
+                    <i class="fas fa-plus me-2"></i> Tambah Pengalaman Kerja
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Flash Messages -->
+    <?php if (session()->getFlashdata('success')): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <?= session()->getFlashdata('success') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <?php if (session()->getFlashdata('error')): ?>
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fas fa-exclamation-circle me-2"></i>
+            <?= session()->getFlashdata('error') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <!-- Work Experience Cards -->
+    <div class="row">
+        <?php if (empty($work_experiences)): ?>
+            <div class="col-12">
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-briefcase fa-4x"></i>
+                    </div>
+                    <h4 class="text-muted mb-3">Belum ada pengalaman kerja</h4>
+                    <p class="text-muted mb-4">Mulai tambahkan pengalaman kerja Anda untuk melengkapi portofolio profesional.</p>
+                    <a href="<?= base_url('work-experience/create') ?>" class="btn add-btn">
+                        <i class="fas fa-plus me-2"></i> Tambah Pengalaman Kerja Pertama
+                    </a>
+                </div>
+            </div>
+        <?php else: ?>
+            <?php foreach ($work_experiences as $experience): ?>
+                <div class="col-lg-6 col-xl-6 mb-4">
+                    <div class="card work-experience-card shadow-sm border-0">
+                        <!-- Company Info Header -->
+                        <div class="card-header-custom">
+                            <div class="d-flex align-items-center justify-content-between">
+                                <div class="d-flex align-items-center">
+                                    <?php if ($experience['company_logo']): ?>
+                                        <img src="<?= base_url('uploads/company_logos/' . $experience['company_logo']) ?>"
+                                            alt="<?= esc($experience['company_name']) ?>"
+                                            class="company-logo me-3">
+                                    <?php else: ?>
+                                        <div class="company-logo-placeholder me-3">
+                                            <i class="fas fa-building text-white fa-lg"></i>
+                                        </div>
+                                    <?php endif; ?>
+                                    <div>
+                                        <h5 class="company-name"><?= esc($experience['company_name']) ?></h5>
+                                        <div class="position-title"><?= esc($experience['position']) ?></div>
+                                    </div>
+                                </div>
+                                <?php if ($experience['is_current']): ?>
+                                    <span class="current-badge">
+                                        <i class="fas fa-circle me-1" style="font-size: 0.5rem;"></i>
+                                        Saat Ini
+                                    </span>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <!-- Period Info -->
+                            <div class="period-info">
+                                <p class="period-text">
+                                    <i class="fas fa-calendar-alt me-2" style="color: #667eea;"></i>
+                                    <strong>
+                                        <?= date('M Y', strtotime($experience['start_date'])) ?> -
+                                        <?= $experience['end_date'] ? date('M Y', strtotime($experience['end_date'])) : 'Sekarang' ?>
+                                    </strong>
+                                    <span class="ms-2 text-muted">(<?= $experience['period'] ?>)</span>
+                                </p>
+                            </div>
+
+                            <!-- Description -->
+                            <?php if ($experience['description']): ?>
+                                <div class="mb-3">
+                                    <p class="description-text">
+                                        <?= strlen($experience['description']) > 150 ?
+                                            esc(substr($experience['description'], 0, 150)) . '...' :
+                                            esc($experience['description']) ?>
+                                    </p>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Skills -->
+                            <?php if (!empty($experience['skills_used'])): ?>
+                                <div class="mb-4">
+                                    <h6 class="text-muted mb-2">
+                                        <i class="fas fa-code me-1"></i> Skills
+                                    </h6>
+                                    <div class="d-flex flex-wrap">
+                                        <?php foreach (array_slice($experience['skills_used'], 0, 4) as $skill): ?>
+                                            <span class="skill-badge"><?= esc($skill) ?></span>
+                                        <?php endforeach; ?>
+                                        <?php if (count($experience['skills_used']) > 4): ?>
+                                            <span class="skill-more-badge">
+                                                +<?= count($experience['skills_used']) - 4 ?> lainnya
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- Documentation Images Slider -->
+                            <?php if (!empty($experience['documentation_images'])): ?>
+                                <div class="mb-3">
+                                    <h6 class="section-title">
+                                        <i class="fas fa-images me-1"></i>
+                                        Dokumentasi (<?= count($experience['documentation_images']) ?> foto)
+                                    </h6>
+                                    <div class="position-relative">
+                                        <div class="documentation-count">
+                                            <?= count($experience['documentation_images']) ?> foto
+                                        </div>
+                                        <div class="swiper documentation-slider" id="slider-<?= $experience['id'] ?>">
+                                            <div class="swiper-wrapper">
+                                                <?php foreach ($experience['documentation_images'] as $index => $image): ?>
+                                                    <div class="swiper-slide">
+                                                        <img src="<?= base_url('uploads/documentation/' . $image) ?>"
+                                                            alt="Dokumentasi <?= $index + 1 ?>"
+                                                            onclick="showImageModal('<?= base_url('uploads/documentation/' . $image) ?>', 'Dokumentasi <?= $index + 1 ?> - <?= esc($experience['company_name']) ?>')">
+                                                    </div>
+                                                <?php endforeach; ?>
+                                            </div>
+                                            <?php if (count($experience['documentation_images']) > 1): ?>
+                                                <div class="swiper-pagination"></div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <div class="d-flex justify-content-between">
+                                <a href="<?= base_url('work-experience/show/' . $experience['id']) ?>"
+                                    class="btn btn-detail btn-action">
+                                    <i class="fas fa-eye me-1"></i> Detail
+                                </a>
+                                <div>
+                                    <a href="<?= base_url('work-experience/edit/' . $experience['id']) ?>"
+                                        class="btn btn-edit btn-action btn-sm me-2">
+                                        <i class="fas fa-edit me-1"></i> Edit
+                                    </a>
+                                    <button type="button"
+                                        class="btn btn-delete btn-action btn-sm"
+                                        onclick="confirmDelete(<?= $experience['id'] ?>, '<?= esc($experience['company_name']) ?>')">
+                                        <i class="fas fa-trash me-1"></i> Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
+</div>
+
+<!-- Image Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="imageModalLabel">Dokumentasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center p-0">
+                <img id="modalImage" src="" alt="" class="img-fluid" style="max-height: 80vh; width: auto;">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                    Konfirmasi Hapus
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-3">Apakah Anda yakin ingin menghapus pengalaman kerja di <strong id="companyName"></strong>?</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <small>Data yang dihapus tidak dapat dikembalikan. Semua file dokumentasi juga akan terhapus.</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i> Batal
+                </button>
+                <form id="deleteForm" method="post" class="d-inline">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="_method" value="DELETE">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-1"></i> Ya, Hapus
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Swiper for each documentation slider
+        <?php if (!empty($work_experiences)): ?>
+            <?php foreach ($work_experiences as $experience): ?>
+                <?php if (!empty($experience['documentation_images']) && count($experience['documentation_images']) > 1): ?>
+                    new Swiper('#slider-<?= $experience['id'] ?>', {
+                        slidesPerView: 1,
+                        spaceBetween: 10,
+                        loop: <?= count($experience['documentation_images']) > 1 ? 'true' : 'false' ?>,
+                        autoplay: {
+                            delay: 3000,
+                            disableOnInteraction: false,
+                        },
+                        pagination: {
+                            el: '#slider-<?= $experience['id'] ?> .swiper-pagination',
+                            clickable: true,
+                        },
+                        effect: 'fade',
+                        fadeEffect: {
+                            crossFade: true
+                        }
+                    });
+                <?php endif; ?>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    });
+
+    function showImageModal(imageSrc, imageTitle) {
+        document.getElementById('modalImage').src = imageSrc;
+        document.getElementById('imageModalLabel').textContent = imageTitle;
+        const modal = new bootstrap.Modal(document.getElementById('imageModal'));
+        modal.show();
+    }
+
+    function confirmDelete(id, companyName) {
+        document.getElementById('companyName').textContent = companyName;
+        document.getElementById('deleteForm').action = '<?= base_url('work-experience/delete/') ?>' + id;
+        const modal = new bootstrap.Modal(document.getElementById('deleteModal'));
+        modal.show();
+    }
+
+    // Add smooth animations
+    document.querySelectorAll('.work-experience-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-5px)';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+</script>
