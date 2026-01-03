@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\SkillModel;
+use CodeIgniter\Controller;
+
+class SkillPublicController extends Controller
+{
+    protected $skillModel;
+    protected $helpers = ['form'];
+
+    public function __construct()
+    {
+        $this->skillModel = new SkillModel();
+    }
+
+    // Menampilkan semua skills
+    public function index()
+    {
+        $data = [
+            'title' => 'Daftar Skills',
+            'skills' => $this->skillModel->findAll()
+        ];
+
+        return view('skills/skill', $data);
+    }
+}

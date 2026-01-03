@@ -1,0 +1,52 @@
+<?= $this->extend('control/layout/admin_layout') ?>
+<?= $this->section('content') ?>
+
+<div class="container mt-5">
+
+    <?php if (session()->getFlashdata('errors')): ?>
+        <div class="alert alert-danger">
+            <ul>
+                <?php foreach (session()->getFlashdata('errors') as $error): ?>
+                    <li><?= esc($error) ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
+
+    <form action="<?= base_url('skill/update/' . $skill['id']) ?>" method="post">
+        <?= csrf_field() ?>
+
+        <div class="mb-3">
+            <label for="skill_name" class="form-label">Nama Skill</label>
+            <input type="text" class="form-control <?= (isset($validation) && $validation->hasError('skill_name')) ? 'is-invalid' : '' ?>"
+                id="skill_name" name="skill_name" value="<?= old('skill_name', $skill['skill_name']) ?>" required>
+            <?php if (isset($validation) && $validation->hasError('skill_name')): ?>
+                <div class="invalid-feedback"><?= $validation->getError('skill_name') ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="mb-3">
+            <label for="category" class="form-label">Kategori</label>
+            <input type="text" class="form-control <?= (isset($validation) && $validation->hasError('category')) ? 'is-invalid' : '' ?>"
+                id="category" name="category" value="<?= old('category', $skill['category']) ?>" required>
+            <?php if (isset($validation) && $validation->hasError('category')): ?>
+                <div class="invalid-feedback"><?= $validation->getError('category') ?></div>
+            <?php endif; ?>
+        </div>
+
+        <div class="mb-3">
+            <label for="description" class="form-label">Deskripsi</label>
+            <textarea class="form-control <?= (isset($validation) && $validation->hasError('description')) ? 'is-invalid' : '' ?>"
+                id="description" name="description" rows="3"><?= old('description', $skill['description']) ?></textarea>
+            <?php if (isset($validation) && $validation->hasError('description')): ?>
+                <div class="invalid-feedback"><?= $validation->getError('description') ?></div>
+            <?php endif; ?>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a href="<?= base_url('skill') ?>" class="btn btn-secondary">Kembali</a>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<?= $this->endSection() ?>

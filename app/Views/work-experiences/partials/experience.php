@@ -1,7 +1,12 @@
 <style>
     /* Hero Section */
+    :root {
+        --gradient-primary: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+        --gradient-secondary: linear-gradient(135deg, #444 0%, #111 100%);
+    }
+
     .hero-section {
-        background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+        background: var(--gradient-primary);
         border-bottom: 1px solid #e3e6f0;
         padding: 3rem 0;
     }
@@ -51,17 +56,17 @@
     }
 
     .filter-pill:hover {
-        border-color: #667eea;
-        color: #667eea;
+        border-color: #555;
+        color: #222;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .filter-pill.active {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-color: #667eea;
-        color: white;
-        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        background: linear-gradient(135deg, #444 0%, #111 100%);
+        border-color: #333;
+        color: #fff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     /* Experience Card - 2 Column Layout */
@@ -70,15 +75,20 @@
         border-radius: 20px;
         padding: 0;
         margin-bottom: 2.5rem;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        box-shadow:
+            0 2px 6px rgba(0, 0, 0, 0.2),
+            0 12px 24px rgba(0, 0, 0, 0.35);
+
         transition: all 0.3s ease;
         border: 1px solid #f0f0f0;
         overflow: hidden;
     }
 
     .experience-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
+        transform:
+            translateY(-5px),
+            scale(2);
+        box-shadow: 0 8px 35px rgba(0, 0, 0, 0.5);
     }
 
     .experience-content-wrapper {
@@ -101,7 +111,7 @@
         left: 0;
         width: 4px;
         height: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--gradient-primary);
     }
 
     /* Right Column - Gallery Carousel */
@@ -141,14 +151,14 @@
     .position-title {
         font-size: 1.5rem;
         font-weight: 700;
-        color: #2c3e50;
+        color: #313233ff;
         margin-bottom: 0.25rem;
         font-family: 'Segoe UI', sans-serif;
     }
 
     .company-name {
         font-size: 1.1rem;
-        color: #667eea;
+        color: black;
         font-weight: 600;
         margin-bottom: 0.5rem;
     }
@@ -176,7 +186,7 @@
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
-        color: #667eea;
+        color: black;
         margin-bottom: 0.75rem;
         margin-top: 1.5rem;
     }
@@ -197,9 +207,9 @@
     }
 
     .skill-badge {
-        background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
-        color: #667eea;
-        border: 1px solid #e3e6f0;
+        background: var(--gradient-primary);
+        color: black;
+
         padding: 0.5rem 1rem;
         border-radius: 20px;
         font-size: 0.85rem;
@@ -208,10 +218,10 @@
     }
 
     .skill-badge:hover {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--gradient-secondary);
         color: white;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        box-shadow: 0 4px 12px rgba(34, 34, 34, 0.3);
     }
 
     /* Carousel Styling */
@@ -236,7 +246,7 @@
     .gallery-carousel .carousel-control-next {
         width: 50px;
         height: 50px;
-        background: rgba(102, 126, 234, 0.9);
+        background: rgba(27, 27, 27, 0.9);
         border-radius: 50%;
         top: 50%;
         transform: translateY(-50%);
@@ -269,7 +279,8 @@
     }
 
     .gallery-carousel .carousel-indicators button.active {
-        background-color: #667eea;
+        background-color: #19191aff;
+        opacity: 20%;
     }
 
     .no-gallery {
@@ -285,7 +296,7 @@
 
     /* Action Button */
     .btn-detail {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: var(--gradient-secondary);
         color: white;
         padding: 0.75rem 2rem;
         border: none;
@@ -299,11 +310,15 @@
         gap: 0.5rem;
         text-decoration: none;
         margin-top: 1.5rem;
+        box-shadow:
+            0 2px 6px rgba(0, 0, 0, 0.2),
+            0 12px 24px rgba(0, 0, 0, 0.35);
+
     }
 
     .btn-detail:hover {
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        box-shadow: 0 6px 20px rgba(41, 41, 41, 0.7);
         color: white;
     }
 
@@ -331,7 +346,7 @@
     .stat-number {
         font-size: 2.5rem;
         font-weight: 300;
-        color: #667eea;
+        color: #202020ff;
         margin-bottom: 0.5rem;
     }
 
@@ -352,7 +367,7 @@
     }
 
     .empty-state svg {
-        color: #667eea;
+        color: #2a2a2bff;
         opacity: 0.5;
         margin-bottom: 1.5rem;
     }
