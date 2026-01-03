@@ -15,12 +15,26 @@ class ExperiencePublicController extends BaseController
     }
 
     /**
-     * Halaman publik untuk menampilkan semua work experience
+     * Halaman publik untuk menampilkan semua work experience dengan filter tahun
      */
     public function index()
     {
+        $year = $this->request->getGet('year');
+
+        // Get all available years from database
+        $availableYears = $this->WorkExperienceModel->getAvailableYears();
+
+        // Get experiences based on year filter
+        if ($year) {
+            $experiences = $this->WorkExperienceModel->getWorkExperiencesByYear($year);
+        } else {
+            $experiences = $this->WorkExperienceModel->getWorkExperiences('start_date', 'DESC');
+        }
+
         $data = [
-            'work_experiences' => $this->WorkExperienceModel->getWorkExperiences('start_date', 'DESC'),
+            'work_experiences' => $experiences,
+            'available_years' => $availableYears,
+            'selected_year' => $year,
             'title' => 'Pengalaman Kerja',
             'meta_description' => 'Lihat pengalaman kerja dan perjalanan karir profesional saya'
         ];
@@ -53,7 +67,13 @@ class ExperiencePublicController extends BaseController
      */
     public function api()
     {
-        $experiences = $this->WorkExperienceModel->getWorkExperiences('start_date', 'DESC');
+        $year = $this->request->getGet('year');
+
+        if ($year) {
+            $experiences = $this->WorkExperienceModel->getWorkExperiencesByYear($year);
+        } else {
+            $experiences = $this->WorkExperienceModel->getWorkExperiences('start_date', 'DESC');
+        }
 
         return $this->response->setJSON([
             'status' => 'success',
@@ -159,7 +179,6 @@ class ExperiencePublicController extends BaseController
         foreach ($allExperiences as $experience) {
             $skills = json_decode($experience['skills_used'], true) ?? [];
 
-            // Check if skill exists in skills_used array (case insensitive)
             foreach ($skills as $expSkill) {
                 if (stripos($expSkill, $skill) !== false) {
                     $experience['documentation_images'] = json_decode($experience['documentation_images'], true) ?? [];
@@ -171,7 +190,6 @@ class ExperiencePublicController extends BaseController
             }
         }
 
-        // Sort by start_date DESC
         usort($filteredExperiences, function ($a, $b) {
             return strtotime($b['start_date']) - strtotime($a['start_date']);
         });
@@ -183,39 +201,6 @@ class ExperiencePublicController extends BaseController
         ];
 
         return view('work-experiences/experience', $data);
-    }
-
-    /**
-     * Get timeline data for visualization
-     */
-    public function timeline()
-    {
-        $experiences = $this->WorkExperienceModel->getWorkExperiences('start_date', 'ASC');
-
-        $data = [
-            'work_experiences' => $experiences,
-            'title' => 'Timeline Karir'
-        ];
-
-        return view('work-experiences/work-experience-timeline', $data);
-    }
-
-    /**
-     * Download CV/Resume based on work experiences
-     */
-    public function downloadCV()
-    {
-        $experiences = $this->WorkExperienceModel->getWorkExperiences('start_date', 'DESC');
-
-        // Generate PDF atau Word document
-        // Anda bisa menggunakan library seperti TCPDF atau Dompdf
-
-        $data = [
-            'work_experiences' => $experiences
-        ];
-
-        // Contoh sederhana menggunakan view untuk generate HTML yang akan di-print
-        return view('public/cv-template', $data);
     }
 
     /**
@@ -266,7 +251,6 @@ class ExperiencePublicController extends BaseController
             'skills' => []
         ];
 
-        // Calculate total years and collect all skills
         foreach ($experiences as $exp) {
             $start = new \DateTime($exp['start_date']);
             $end = $exp['end_date'] ? new \DateTime($exp['end_date']) : new \DateTime();
@@ -276,7 +260,6 @@ class ExperiencePublicController extends BaseController
             $stats['skills'] = array_merge($stats['skills'], $skills);
         }
 
-        // Count skill frequency
         $stats['skills'] = array_count_values($stats['skills']);
         arsort($stats['skills']);
 

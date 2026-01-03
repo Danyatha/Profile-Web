@@ -1,273 +1,704 @@
-<?= $this->extend('layout/default') ?>
+<!DOCTYPE html>
+<html lang="id">
 
-<?= $this->section('title') ?>
-<?= $title ?>
-<?= $this->endSection() ?>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?= esc($work_experience['position']) ?> - <?= esc($work_experience['company_name']) ?></title>
+    <link rel="stylesheet" href="<?= base_url('css/experience-style.css'); ?>">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+</head>
 
-<?= $this->section('content') ?>
-<div class="container-fluid">
-    <!-- Header -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center">
-                <h1 class="h3 mb-0 text-gray-800"><?= $title ?></h1>
-                <div>
-                    <a href="<?= base_url('work-experience') ?>" class="btn btn-outline-secondary mr-2">
-                        <i class="fas fa-arrow-left"></i> Kembali
-                    </a>
-                    <a href="<?= base_url('work-experience/edit/' . $work_experience['id']) ?>" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Edit
-                    </a>
+<body>
+    <style>
+        /* Detail Page Specific Styles */
+        .detail-hero {
+            background: linear-gradient(135deg, rgba(180, 180, 180, 0.7), rgba(200, 200, 200, 0.7));
+            color: white;
+            padding: 4rem 0 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detail-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: 100px;
+            opacity: 0.3;
+        }
+
+        .back-button-detail {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-button-detail:hover {
+            color: #ffd700;
+            transform: translateX(-5px);
+        }
+
+        .back-button-detail svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .company-header {
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .company-logo-large {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+        }
+
+        .company-logo-large img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .company-info h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            font-family: 'Abril Fatface', serif;
+        }
+
+        .company-info .company-name-detail {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            margin-bottom: 1rem;
+        }
+
+        .meta-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .meta-item svg {
+            width: 20px;
+            height: 20px;
+            opacity: 0.9;
+        }
+
+        .current-badge-large {
+            background: rgba(255, 255, 255, 0.3);
+            padding: 0.5rem 1.5rem;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-block;
+            backdrop-filter: blur(10px);
+        }
+
+        /* Content Sections */
+        .detail-content {
+            background: #f8f9fc;
+            padding: 3rem 0;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .content-card:hover {
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .content-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .content-card-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .content-card-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .content-card-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+            font-family: 'Abril Fatface', serif;
+        }
+
+        .content-text {
+            color: #495057;
+            line-height: 1.8;
+            font-size: 1rem;
+            white-space: pre-line;
+        }
+
+        .content-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .content-list li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+            color: #495057;
+            line-height: 1.7;
+        }
+
+        .content-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Skills Section */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .skill-item {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+            border: 2px solid #e3e6f0;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            color: #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        /* Gallery Section */
+        .gallery-detail {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .gallery-detail-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 4/3;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .gallery-detail-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .gallery-detail-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-detail-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-detail-item::after {
+            content: '🔍';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-detail-item:hover::after {
+            opacity: 1;
+        }
+
+        /* Timeline */
+        .timeline-section {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline-section::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .timeline-item-detail {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item-detail::before {
+            content: '';
+            position: absolute;
+            left: -2.5rem;
+            top: 0.5rem;
+            width: 12px;
+            height: 12px;
+            background: #667eea;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 0 3px #667eea;
+        }
+
+        /* Sidebar */
+        .sidebar-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .sidebar-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            font-family: 'Abril Fatface', serif;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #6c757d;
+        }
+
+        .info-value {
+            color: #2c3e50;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        /* Actions */
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-action-detail {
+            flex: 1;
+            padding: 1rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-edit-detail {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-edit-detail:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            color: white;
+        }
+
+        .btn-delete-detail {
+            background: white;
+            color: #dc3545;
+            border: 2px solid #dc3545;
+        }
+
+        .btn-delete-detail:hover {
+            background: #dc3545;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .detail-hero {
+                padding: 3rem 0 2rem;
+            }
+
+            .company-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .company-logo-large {
+                width: 100px;
+                height: 100px;
+            }
+
+            .company-info h1 {
+                font-size: 2rem;
+            }
+
+            .meta-info {
+                justify-content: center;
+                gap: 1rem;
+            }
+
+            .content-card {
+                padding: 1.5rem;
+            }
+
+            .gallery-detail {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+
+            .sidebar-card {
+                position: static;
+                margin-top: 2rem;
+            }
+
+            .detail-actions {
+                flex-direction: column;
+            }
+
+            .skills-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+    </style>
+
+    <!-- Hero Section -->
+    <section class="detail-hero">
+        <div>
+            <a href="<?= base_url('/work-experiences'); ?>" class="back-button">&#8592; Back to Experiences</a>
+        </div>
+        <img src="<?= base_url('images/trolling-one.webp') ?>" class="bg-profile-image" alt="bg-profile-image" loading="lazy"
+            style="object-fit: cover; 
+                object-position: 10% 30%; 
+                min-height: 300px; 
+                max-height: 500px; 
+                width: 100%; 
+                position: absolute; 
+                z-index: 0; 
+                opacity: 0.3;">
+        <div class="container">
+            <div class="company-header" data-aos="fade-up">
+                <?php if ($work_experience['company_logo']): ?>
+                    <div class="company-logo-large">
+                        <img src="<?= base_url('uploads/company_logos/' . $work_experience['company_logo']) ?>"
+                            alt="<?= esc($work_experience['company_name']) ?>">
+                    </div>
+                <?php endif; ?>
+                <div class="company-info">
+                    <h1><?= esc($work_experience['position']) ?></h1>
+                    <p class="company-name-detail"><?= esc($work_experience['company_name']) ?></p>
+
+                    <div class="meta-info">
+                        <div class="meta-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span><?= date('M Y', strtotime($work_experience['start_date'])) ?> -
+                                <?= $work_experience['end_date'] ? date('M Y', strtotime($work_experience['end_date'])) : 'Present' ?>
+                            </span>
+                        </div>
+                        <div class="meta-item">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span><?= esc($work_experience['period']) ?></span>
+                        </div>
+                        <?php if ($work_experience['is_current']): ?>
+                            <span class="current-badge-large">Currently Working</span>
+                        <?php endif; ?>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    <div class="row">
-        <!-- Main Content -->
-        <div class="col-lg-8">
-            <!-- Company Info Card -->
-            <div class="card shadow mb-4">
-                <div class="card-header bg-primary text-white">
-                    <div class="d-flex align-items-center">
-                        <?php if ($work_experience['company_logo']): ?>
-                            <img src="<?= base_url('uploads/company_logos/' . $work_experience['company_logo']) ?>"
-                                alt="<?= esc($work_experience['company_name']) ?>"
-                                class="rounded-circle me-3 bg-white p-2"
-                                style="width: 60px; height: 60px; object-fit: cover;">
-                        <?php else: ?>
-                            <div class="bg-white rounded-circle d-flex align-items-center justify-content-center me-3"
-                                style="width: 60px; height: 60px;">
-                                <i class="fas fa-building text-primary fa-lg"></i>
-                            </div>
-                        <?php endif; ?>
-                        <div class="flex-grow-1">
-                            <h4 class="mb-1"><?= esc($work_experience['company_name']) ?></h4>
-                            <h6 class="mb-0 text-light"><?= esc($work_experience['position']) ?></h6>
-                        </div>
-                        <?php if ($work_experience['is_current']): ?>
-                            <span class="badge badge-success badge-lg">Saat Ini</span>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <!-- Period -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Periode Kerja</h6>
-                            <p class="mb-0">
-                                <i class="fas fa-calendar-alt text-primary"></i>
-                                <?= date('d F Y', strtotime($work_experience['start_date'])) ?> -
-                                <?= $work_experience['end_date'] ? date('d F Y', strtotime($work_experience['end_date'])) : 'Sekarang' ?>
-                            </p>
-                            <small class="text-muted">Durasi: <?= $work_experience['period'] ?></small>
-                        </div>
-                        <div class="col-md-6">
-                            <h6 class="text-muted">Status</h6>
-                            <p class="mb-0">
-                                <?php if ($work_experience['is_current']): ?>
-                                    <span class="badge badge-success">
-                                        <i class="fas fa-check-circle"></i> Masih Aktif
-                                    </span>
-                                <?php else: ?>
-                                    <span class="badge badge-secondary">
-                                        <i class="fas fa-history"></i> Selesai
-                                    </span>
-                                <?php endif; ?>
-                            </p>
-                        </div>
-                    </div>
-
+    <!-- Main Content -->
+    <section class="detail-content">
+        <div class="container">
+            <div class="row">
+                <!-- Main Column -->
+                <div class="col-lg-8">
                     <!-- Description -->
                     <?php if ($work_experience['description']): ?>
-                        <div class="mb-4">
-                            <h6 class="text-muted">Deskripsi</h6>
-                            <p class="text-justify"><?= nl2br(esc($work_experience['description'])) ?></p>
+                        <div class="content-card" data-aos="fade-up">
+                            <div class="content-card-header">
+                                <div class="content-card-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <h2 class="content-card-title">Overview</h2>
+                            </div>
+                            <p class="content-text"><?= nl2br(esc($work_experience['description'])) ?></p>
                         </div>
                     <?php endif; ?>
 
-                    <!-- Job Description -->
+                    <!-- Responsibilities -->
                     <?php if ($work_experience['job_description']): ?>
-                        <div class="mb-4">
-                            <h6 class="text-muted">Job Description</h6>
-                            <div class="bg-light p-3 rounded">
-                                <p class="mb-0 text-justify"><?= nl2br(esc($work_experience['job_description'])) ?></p>
+                        <div class="content-card" data-aos="fade-up" data-aos-delay="100">
+                            <div class="content-card-header">
+                                <div class="content-card-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                    </svg>
+                                </div>
+                                <h2 class="content-card-title">Key Responsibilities</h2>
+                            </div>
+                            <div class="timeline-section">
+                                <?php
+                                $responsibilities = explode("\n", $work_experience['job_description']);
+                                foreach ($responsibilities as $resp):
+                                    if (trim($resp)):
+                                ?>
+                                        <div class="timeline-item-detail">
+                                            <p class="content-text mb-2"><?= esc(trim($resp)) ?></p>
+                                        </div>
+                                <?php
+                                    endif;
+                                endforeach;
+                                ?>
                             </div>
                         </div>
                     <?php endif; ?>
 
                     <!-- Achievements -->
                     <?php if ($work_experience['achievements']): ?>
-                        <div class="mb-4">
-                            <h6 class="text-muted">Pencapaian</h6>
-                            <div class="bg-success bg-opacity-10 p-3 rounded border-left border-success">
-                                <p class="mb-0 text-justify"><?= nl2br(esc($work_experience['achievements'])) ?></p>
+                        <div class="content-card" data-aos="fade-up" data-aos-delay="200">
+                            <div class="content-card-header">
+                                <div class="content-card-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                                    </svg>
+                                </div>
+                                <h2 class="content-card-title">Achievements</h2>
+                            </div>
+                            <div class="timeline-section">
+                                <?php
+                                $achievements = explode("\n", $work_experience['achievements']);
+                                foreach ($achievements as $achievement):
+                                    if (trim($achievement)):
+                                ?>
+                                        <div class="timeline-item-detail">
+                                            <p class="content-text mb-2"><?= esc(trim($achievement)) ?></p>
+                                        </div>
+                                <?php
+                                    endif;
+                                endforeach;
+                                ?>
                             </div>
                         </div>
                     <?php endif; ?>
 
-                    <!-- Skills Used -->
+                    <!-- Skills -->
                     <?php if (!empty($work_experience['skills_used'])): ?>
-                        <div class="mb-4">
-                            <h6 class="text-muted">Skills yang Digunakan</h6>
-                            <div class="d-flex flex-wrap">
+                        <div class="content-card" data-aos="fade-up" data-aos-delay="300">
+                            <div class="content-card-header">
+                                <div class="content-card-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                </div>
+                                <h2 class="content-card-title">Skills & Technologies</h2>
+                            </div>
+                            <div class="skills-grid">
                                 <?php foreach ($work_experience['skills_used'] as $skill): ?>
-                                    <span class="badge badge-primary mr-2 mb-2 px-3 py-1">
-                                        <i class="fas fa-code"></i> <?= esc($skill) ?>
-                                    </span>
+                                    <div class="skill-item"><?= esc($skill) ?></div>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Gallery -->
+                    <?php if (!empty($work_experience['documentation_images'])): ?>
+                        <div class="content-card" data-aos="fade-up" data-aos-delay="400">
+                            <div class="content-card-header">
+                                <div class="content-card-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <h2 class="content-card-title">Documentation Gallery</h2>
+                            </div>
+                            <div class="gallery-detail">
+                                <?php foreach ($work_experience['documentation_images'] as $image): ?>
+                                    <a href="<?= base_url('uploads/documentation/' . $image) ?>"
+                                        data-lightbox="experience-gallery"
+                                        data-title="<?= esc($work_experience['company_name']) ?>"
+                                        class="gallery-detail-item">
+                                        <img src="<?= base_url('uploads/documentation/' . $image) ?>"
+                                            alt="<?= esc($work_experience['company_name']) ?>">
+                                    </a>
                                 <?php endforeach; ?>
                             </div>
                         </div>
                     <?php endif; ?>
                 </div>
-            </div>
 
-            <!-- Documentation Images -->
-            <?php if (!empty($work_experience['documentation_images'])): ?>
-                <div class="card shadow">
-                    <div class="card-header">
-                        <h6 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-images"></i> Dokumentasi Pekerjaan
-                            <span class="badge badge-secondary ml-2"><?= count($work_experience['documentation_images']) ?> Gambar</span>
-                        </h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <?php foreach ($work_experience['documentation_images'] as $index => $image): ?>
-                                <div class="col-md-4 col-sm-6 mb-3">
-                                    <div class="card">
-                                        <img src="<?= base_url('uploads/documentation/' . $image) ?>"
-                                            alt="Dokumentasi <?= $index + 1 ?>"
-                                            class="card-img-top"
-                                            style="height: 200px; object-fit: cover; cursor: pointer;"
-                                            onclick="showImageModal('<?= base_url('uploads/documentation/' . $image) ?>', 'Dokumentasi <?= $index + 1 ?>')">
-                                        <div class="card-body p-2">
-                                            <small class="text-muted">Dokumentasi <?= $index + 1 ?></small>
-                                        </div>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
+                <!-- Sidebar -->
+                <div class="col-lg-4">
+                    <div class="sidebar-card" data-aos="fade-left">
+                        <h3 class="sidebar-title">Experience Details</h3>
+
+                        <div class="info-item">
+                            <span class="info-label">Company</span>
+                            <span class="info-value"><?= esc($work_experience['company_name']) ?></span>
                         </div>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
 
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Quick Actions -->
-            <div class="card shadow mb-4">
-                <div class="card-header">
-                    <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
-                </div>
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <a href="<?= base_url('work-experience/edit/' . $work_experience['id']) ?>"
-                            class="btn btn-primary btn-block">
-                            <i class="fas fa-edit"></i> Edit Pengalaman Kerja
-                        </a>
-                        <button type="button"
-                            class="btn btn-outline-danger btn-block"
-                            onclick="confirmDelete(<?= $work_experience['id'] ?>, '<?= esc($work_experience['company_name']) ?>')">
-                            <i class="fas fa-trash"></i> Hapus Pengalaman Kerja
-                        </button>
-                        <a href="<?= base_url('work-experience/create') ?>"
-                            class="btn btn-outline-success btn-block">
-                            <i class="fas fa-plus"></i> Tambah Pengalaman Baru
-                        </a>
-                    </div>
-                </div>
-            </div>
+                        <div class="info-item">
+                            <span class="info-label">Position</span>
+                            <span class="info-value"><?= esc($work_experience['position']) ?></span>
+                        </div>
 
-            <!-- Summary Info -->
-            <div class="card shadow">
-                <div class="card-header">
-                    <h6 class="m-0 font-weight-bold text-primary">Ringkasan</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <div class="border-right">
-                                <div class="h5 font-weight-bold text-primary">
-                                    <?= count($work_experience['skills_used']) ?>
-                                </div>
-                                <small class="text-muted">Skills</small>
+                        <div class="info-item">
+                            <span class="info-label">Start Date</span>
+                            <span class="info-value"><?= date('d M Y', strtotime($work_experience['start_date'])) ?></span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">End Date</span>
+                            <span class="info-value">
+                                <?= $work_experience['end_date'] ? date('d M Y', strtotime($work_experience['end_date'])) : 'Present' ?>
+                            </span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Duration</span>
+                            <span class="info-value"><?= esc($work_experience['period']) ?></span>
+                        </div>
+
+                        <div class="info-item">
+                            <span class="info-label">Status</span>
+                            <span class="info-value">
+                                <?= $work_experience['is_current'] ? '<span style="color: #28a745;">Active</span>' : '<span style="color: #6c757d;">Completed</span>' ?>
+                            </span>
+                        </div>
+
+                        <?php if (!empty($work_experience['skills_used'])): ?>
+                            <div class="info-item">
+                                <span class="info-label">Skills Used</span>
+                                <span class="info-value"><?= count($work_experience['skills_used']) ?></span>
                             </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="h5 font-weight-bold text-success">
-                                <?= count($work_experience['documentation_images']) ?>
+                        <?php endif; ?>
+
+                        <?php if (!empty($work_experience['documentation_images'])): ?>
+                            <div class="info-item">
+                                <span class="info-label">Documentation</span>
+                                <span class="info-value"><?= count($work_experience['documentation_images']) ?> images</span>
                             </div>
-                            <small class="text-muted">Dokumentasi</small>
-                        </div>
-                    </div>
-                    <hr>
-                    <div class="text-center">
-                        <div class="h6 font-weight-bold text-info">
-                            <?= $work_experience['period'] ?>
-                        </div>
-                        <small class="text-muted">Total Durasi</small>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </section>
 
-<!-- Image Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="imageModalLabel">Dokumentasi</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body text-center">
-                <img id="modalImage" src="" alt="" class="img-fluid">
-            </div>
-        </div>
-    </div>
-</div>
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 
-<!-- Delete Confirmation Modal -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <p>Apakah Anda yakin ingin menghapus pengalaman kerja di <strong id="companyName"></strong>?</p>
-                <p class="text-muted small">Data yang dihapus tidak dapat dikembalikan.</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                <form id="deleteForm" method="post" class="d-inline">
-                    <?= csrf_field() ?>
-                    <input type="hidden" name="_method" value="DELETE">
-                    <button type="submit" class="btn btn-danger">Ya, Hapus</button>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+    <script>
+        // Initialize AOS
+        AOS.init({
+            duration: 600,
+            once: true,
+            easing: 'ease-out'
+        });
 
-<script>
-    function showImageModal(imageSrc, imageTitle) {
-        document.getElementById('modalImage').src = imageSrc;
-        document.getElementById('imageModalLabel').textContent = imageTitle;
-        $('#imageModal').modal('show');
-    }
+        // Lightbox configuration
+        lightbox.option({
+            'resizeDuration': 300,
+            'wrapAround': true,
+            'albumLabel': 'Image %1 of %2',
+            'fadeDuration': 300,
+            'imageFadeDuration': 300
+        });
+        // Smooth scroll for back button
+        document.querySelector('.back-button-detail').addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = this.href;
+        });
+    </script>
+</body>
 
-    function confirmDelete(id, companyName) {
-        document.getElementById('companyName').textContent = companyName;
-        document.getElementById('deleteForm').action = '<?= base_url('work-experience/delete/') ?>' + id;
-        $('#deleteModal').modal('show');
-    }
-</script>
-<?= $this->endSection() ?>
+</html>

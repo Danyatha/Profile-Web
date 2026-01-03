@@ -115,6 +115,67 @@ class WorkExperienceModel extends Model
         return $experience;
     }
 
+    /**
+     * Get all available years from work experiences
+     */
+    public function getAvailableYears()
+    {
+        $experiences = $this->findAll();
+        $years = [];
+
+        foreach ($experiences as $exp) {
+            $startYear = date('Y', strtotime($exp['start_date']));
+            $years[] = $startYear;
+
+            if ($exp['end_date']) {
+                $endYear = date('Y', strtotime($exp['end_date']));
+                if ($endYear != $startYear) {
+                    $years[] = $endYear;
+                }
+            } else {
+                // If still working, include current year
+                $currentYear = date('Y');
+                if ($currentYear != $startYear) {
+                    $years[] = $currentYear;
+                }
+            }
+        }
+
+        $years = array_unique($years);
+        rsort($years); // Sort descending
+
+        return $years;
+    }
+
+    /**
+     * Get work experiences by year
+     */
+    public function getWorkExperiencesByYear($year)
+    {
+        $experiences = $this->findAll();
+        $filteredExperiences = [];
+
+        foreach ($experiences as $experience) {
+            $startYear = date('Y', strtotime($experience['start_date']));
+            $endYear = $experience['end_date'] ? date('Y', strtotime($experience['end_date'])) : date('Y');
+
+            // Check if year falls within the experience period
+            if ($year >= $startYear && $year <= $endYear) {
+                $experience['documentation_images'] = json_decode($experience['documentation_images'], true) ?? [];
+                $experience['skills_used'] = json_decode($experience['skills_used'], true) ?? [];
+                $experience['period'] = $this->calculatePeriod($experience['start_date'], $experience['end_date']);
+                $filteredExperiences[] = $experience;
+            }
+        }
+
+        // Sort by start_date DESC
+        usort($filteredExperiences, function ($a, $b) {
+            return strtotime($b['start_date']) - strtotime($a['start_date']);
+        });
+
+        return $filteredExperiences;
+    }
+
     private function calculatePeriod($startDate, $endDate)
     {
         $start = new \DateTime($startDate);

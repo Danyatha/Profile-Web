@@ -1,168 +1,446 @@
-<!-- Hero Section - Minimalist -->
-<section class="py-5 bg-white border-bottom">
+<style>
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+        border-bottom: 1px solid #e3e6f0;
+        padding: 3rem 0;
+    }
+
+    .hero-section .display-5 {
+        font-size: 2.5rem;
+        font-weight: 300;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+    }
+
+    .hero-section .text-muted {
+        font-size: 1.1rem;
+        color: #6c757d;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        background: white;
+        padding: 2rem 0;
+        border-bottom: 1px solid #e3e6f0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .filter-pills {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .filter-pill {
+        padding: 0.6rem 1.5rem;
+        border: 2px solid #e3e6f0;
+        border-radius: 25px;
+        background: white;
+        color: #6c757d;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .filter-pill:hover {
+        border-color: #667eea;
+        color: #667eea;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .filter-pill.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: #667eea;
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Experience Card - 2 Column Layout */
+    .experience-card {
+        background: white;
+        border-radius: 20px;
+        padding: 0;
+        margin-bottom: 2.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border: 1px solid #f0f0f0;
+        overflow: hidden;
+    }
+
+    .experience-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 35px rgba(0, 0, 0, 0.12);
+    }
+
+    .experience-content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+    }
+
+    /* Left Column - Content */
+    .experience-left {
+        padding: 2.5rem;
+        border-right: 1px solid #f0f0f0;
+        position: relative;
+    }
+
+    .experience-left::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Right Column - Gallery Carousel */
+    .experience-right {
+        padding: 2.5rem;
+        background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Company Header */
+    .company-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .company-logo-wrapper {
+        width: 64px;
+        height: 64px;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+        margin-right: 1rem;
+    }
+
+    .company-logo-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: white;
+        padding: 8px;
+    }
+
+    .position-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 0.25rem;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .company-name {
+        font-size: 1.1rem;
+        color: #667eea;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .period-info {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+
+    .period-info .current-badge {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+
+    /* Section Labels */
+    .section-label {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #667eea;
+        margin-bottom: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    /* Description Text */
+    .description-text {
+        color: #495057;
+        line-height: 1.8;
+        font-size: 0.95rem;
+    }
+
+    /* Skills Badges */
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .skill-badge {
+        background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+        color: #667eea;
+        border: 1px solid #e3e6f0;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .skill-badge:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+
+    /* Carousel Styling */
+    .gallery-carousel {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .gallery-carousel .carousel-item {
+        height: 400px;
+    }
+
+    .gallery-carousel .carousel-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    .gallery-carousel .carousel-control-prev,
+    .gallery-carousel .carousel-control-next {
+        width: 50px;
+        height: 50px;
+        background: rgba(102, 126, 234, 0.9);
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .gallery-carousel:hover .carousel-control-prev,
+    .gallery-carousel:hover .carousel-control-next {
+        opacity: 1;
+    }
+
+    .gallery-carousel .carousel-control-prev {
+        left: 15px;
+    }
+
+    .gallery-carousel .carousel-control-next {
+        right: 15px;
+    }
+
+    .gallery-carousel .carousel-indicators {
+        bottom: 15px;
+    }
+
+    .gallery-carousel .carousel-indicators button {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: rgba(255, 255, 255, 0.6);
+    }
+
+    .gallery-carousel .carousel-indicators button.active {
+        background-color: #667eea;
+    }
+
+    .no-gallery {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: #6c757d;
+    }
+
+    .no-gallery svg {
+        opacity: 0.3;
+        margin-bottom: 1rem;
+    }
+
+    /* Action Button */
+    .btn-detail {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        margin-top: 1.5rem;
+    }
+
+    .btn-detail:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        color: white;
+    }
+
+    /* Stats Section */
+    .stats-section {
+        background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
+        padding: 3rem 0;
+        border-top: 1px solid #e3e6f0;
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 300;
+        color: #667eea;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #6c757d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-weight: 600;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
+        border-radius: 20px;
+    }
+
+    .empty-state svg {
+        color: #667eea;
+        opacity: 0.5;
+        margin-bottom: 1.5rem;
+    }
+
+    .empty-state h5 {
+        color: #6c757d;
+        font-weight: 400;
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .experience-content-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .experience-left {
+            border-right: none;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .gallery-carousel .carousel-item {
+            height: 300px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .hero-section .display-5 {
+            font-size: 2rem;
+        }
+
+        .experience-left,
+        .experience-right {
+            padding: 1.5rem;
+        }
+
+        .position-title {
+            font-size: 1.3rem;
+        }
+
+        .company-logo-wrapper {
+            width: 48px;
+            height: 48px;
+        }
+
+        .filter-pills {
+            gap: 0.5rem;
+        }
+
+        .filter-pill {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .gallery-carousel .carousel-item {
+            height: 250px;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
     <div class="container">
         <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <h1 class="display-5 fw-light mb-2">Work Experience</h1>
-                <p class="text-muted">My professional journey</p>
+            <div class="col-lg-10 mx-auto text-center">
+                <h1 class="display-5">Work Experience</h1>
+                <p class="text-muted">My professional journey and achievements</p>
             </div>
         </div>
     </div>
 </section>
 
-<!-- Work Experience List -->
-<section class="py-5">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-8 mx-auto">
-                <?php if (!empty($work_experiences)): ?>
-                    <div class="experience-list">
-                        <?php foreach ($work_experiences as $index => $experience): ?>
-                            <div class="experience-card mb-5 pb-5 border-bottom" data-aos="fade-up" data-aos-delay="<?= $index * 50 ?>">
-                                <!-- Header -->
-                                <div class="d-flex align-items-start mb-3">
-                                    <?php if ($experience['company_logo']): ?>
-                                        <img src="<?= base_url('uploads/company_logos/' . $experience['company_logo']) ?>"
-                                            alt="<?= esc($experience['company_name']) ?>"
-                                            class="rounded me-3"
-                                            style="width: 48px; height: 48px; object-fit: contain;">
-                                    <?php endif; ?>
-                                    <div class="flex-grow-1">
-                                        <h3 class="h5 mb-1 fw-semibold"><?= esc($experience['position']) ?></h3>
-                                        <p class="text-muted mb-1"><?= esc($experience['company_name']) ?></p>
-                                        <p class="text-muted small mb-0">
-                                            <?= date('M Y', strtotime($experience['start_date'])) ?> -
-                                            <?= $experience['end_date'] ? date('M Y', strtotime($experience['end_date'])) : 'Present' ?>
-                                            <span class="mx-1">·</span>
-                                            <?= esc($experience['period']) ?>
-                                            <?php if ($experience['is_current']): ?>
-                                                <span class="mx-1">·</span>
-                                                <span class="text-success">Current</span>
-                                            <?php endif; ?>
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- Description -->
-                                <?php if ($experience['description']): ?>
-                                    <div class="mb-3">
-                                        <p class="text-secondary mb-0" style="line-height: 1.7;"><?= nl2br(esc($experience['description'])) ?></p>
-                                    </div>
-                                <?php endif; ?>
-
-                                <!-- Job Description -->
-                                <?php if ($experience['job_description']): ?>
-                                    <div class="mb-3">
-                                        <p class="small text-uppercase text-muted mb-2 fw-semibold">Responsibilities</p>
-                                        <div class="text-secondary small" style="line-height: 1.8;"><?= nl2br(esc($experience['job_description'])) ?></div>
-                                    </div>
-                                <?php endif; ?>
-
-                                <!-- Achievements -->
-                                <?php if ($experience['achievements']): ?>
-                                    <div class="mb-3">
-                                        <p class="small text-uppercase text-muted mb-2 fw-semibold">Achievements</p>
-                                        <div class="text-secondary small" style="line-height: 1.8;"><?= nl2br(esc($experience['achievements'])) ?></div>
-                                    </div>
-                                <?php endif; ?>
-
-                                <!-- Skills -->
-                                <?php if (!empty($experience['skills_used'])): ?>
-                                    <div class="mb-3">
-                                        <p class="small text-uppercase text-muted mb-2 fw-semibold">Skills</p>
-                                        <div class="d-flex flex-wrap gap-2">
-                                            <?php foreach ($experience['skills_used'] as $skill): ?>
-                                                <span class="badge bg-light text-dark border-0 px-3 py-2 fw-normal" style="font-size: 0.875rem;"><?= esc($skill) ?></span>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-
-                                <!-- Documentation Images -->
-                                <?php if (!empty($experience['documentation_images'])): ?>
-                                    <div class="mt-4">
-                                        <p class="small text-uppercase text-muted mb-3 fw-semibold">Gallery</p>
-                                        <div class="row g-2">
-                                            <?php foreach ($experience['documentation_images'] as $imgIndex => $image): ?>
-                                                <?php if ($imgIndex < 6): // Limit to 6 images 
-                                                ?>
-                                                    <div class="col-4 col-md-3">
-                                                        <a href="<?= base_url('uploads/documentation/' . $image) ?>"
-                                                            data-lightbox="experience-<?= $experience['id'] ?>"
-                                                            data-title="<?= esc($experience['company_name']) ?>">
-                                                            <img src="<?= base_url('uploads/documentation/' . $image) ?>"
-                                                                alt="Documentation"
-                                                                class="img-fluid rounded"
-                                                                style="height: 120px; object-fit: cover; width: 100%; cursor: pointer; transition: opacity 0.2s;">
-                                                        </a>
-                                                    </div>
-                                                <?php endif; ?>
-                                            <?php endforeach; ?>
-                                            <?php if (count($experience['documentation_images']) > 6): ?>
-                                                <div class="col-12">
-                                                    <p class="text-muted small mb-0">+<?= count($experience['documentation_images']) - 6 ?> more images</p>
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
-                                    </div>
-                                <?php endif; ?>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
-                <?php else: ?>
-                    <div class="text-center py-5">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-briefcase text-muted mb-3" viewBox="0 0 16 16">
-                            <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z" />
-                        </svg>
-                        <h5 class="text-muted fw-light">No work experience yet</h5>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Simple Stats -->
-<?php if (!empty($work_experiences)): ?>
-    <section class="py-5 bg-light">
+<!-- Filter Section -->
+<?php if (!empty($available_years)): ?>
+    <section class="filter-section">
         <div class="container">
             <div class="row">
-                <div class="col-lg-8 mx-auto">
-                    <div class="row text-center g-4">
-                        <div class="col-3">
-                            <h3 class="h2 fw-light mb-1"><?= count($work_experiences) ?></h3>
-                            <p class="text-muted small mb-0">Roles</p>
-                        </div>
-                        <div class="col-3">
-                            <h3 class="h2 fw-light mb-1"><?= count(array_unique(array_column($work_experiences, 'company_name'))) ?></h3>
-                            <p class="text-muted small mb-0">Companies</p>
-                        </div>
-                        <div class="col-3">
-                            <h3 class="h2 fw-light mb-1">
-                                <?php
-                                $totalYears = 0;
-                                foreach ($work_experiences as $exp) {
-                                    $start = new DateTime($exp['start_date']);
-                                    $end = $exp['end_date'] ? new DateTime($exp['end_date']) : new DateTime();
-                                    $totalYears += $start->diff($end)->y;
-                                }
-                                echo $totalYears > 0 ? $totalYears . '+' : '<1';
-                                ?>
-                            </h3>
-                            <p class="text-muted small mb-0">Years</p>
-                        </div>
-                        <div class="col-3">
-                            <h3 class="h2 fw-light mb-1">
-                                <?php
-                                $allSkills = [];
-                                foreach ($work_experiences as $exp) {
-                                    $allSkills = array_merge($allSkills, $exp['skills_used']);
-                                }
-                                echo count(array_unique($allSkills));
-                                ?>
-                            </h3>
-                            <p class="text-muted small mb-0">Skills</p>
-                        </div>
+                <div class="col-12">
+                    <div class="filter-pills">
+                        <a href="<?= base_url('work-experiences') ?>"
+                            class="filter-pill <?= empty($selected_year) ? 'active' : '' ?>">
+                            All Years
+                        </a>
+                        <?php foreach ($available_years as $year): ?>
+                            <a href="<?= base_url('work-experiences?year=' . $year) ?>"
+                                class="filter-pill <?= $selected_year == $year ? 'active' : '' ?>">
+                                <?= $year ?>
+                            </a>
+                        <?php endforeach; ?>
                     </div>
                 </div>
             </div>
@@ -170,53 +448,195 @@
     </section>
 <?php endif; ?>
 
-<style>
-    .experience-card {
-        position: relative;
-    }
+<!-- Work Experience List -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <?php if (!empty($work_experiences)): ?>
+                    <div class="experience-list">
+                        <?php foreach ($work_experiences as $index => $experience): ?>
+                            <div class="experience-card" data-aos="fade-up" data-aos-delay="<?= $index * 100 ?>">
+                                <div class="experience-content-wrapper">
+                                    <!-- Left Column - Content -->
+                                    <div class="experience-left">
+                                        <!-- Company Header -->
+                                        <div class="company-header">
+                                            <?php if ($experience['company_logo']): ?>
+                                                <div class="company-logo-wrapper">
+                                                    <img src="<?= base_url('uploads/company_logos/' . $experience['company_logo']) ?>"
+                                                        alt="<?= esc($experience['company_name']) ?>">
+                                                </div>
+                                            <?php endif; ?>
+                                            <div>
+                                                <h3 class="position-title"><?= esc($experience['position']) ?></h3>
+                                                <p class="company-name mb-1"><?= esc($experience['company_name']) ?></p>
+                                                <p class="period-info mb-0">
+                                                    <?= date('M Y', strtotime($experience['start_date'])) ?> -
+                                                    <?= $experience['end_date'] ? date('M Y', strtotime($experience['end_date'])) : 'Present' ?>
+                                                    <span class="mx-1">•</span>
+                                                    <?= esc($experience['period']) ?>
+                                                    <?php if ($experience['is_current']): ?>
+                                                        <span class="current-badge">Current</span>
+                                                    <?php endif; ?>
+                                                </p>
+                                            </div>
+                                        </div>
 
-    .experience-card:last-child {
-        border-bottom: none !important;
-    }
+                                        <!-- Description -->
+                                        <?php if ($experience['description']): ?>
+                                            <div class="mb-3">
+                                                <p class="description-text mb-0"><?= nl2br(esc($experience['description'])) ?></p>
+                                            </div>
+                                        <?php endif; ?>
 
-    .experience-card img[alt="Documentation"]:hover {
-        opacity: 0.85;
-    }
+                                        <!-- Job Description -->
+                                        <?php if ($experience['job_description']): ?>
+                                            <div>
+                                                <h4 class="section-label">Responsibilities</h4>
+                                                <div class="description-text"><?= nl2br(esc($experience['job_description'])) ?></div>
+                                            </div>
+                                        <?php endif; ?>
 
-    .badge {
-        background-color: #f8f9fa !important;
-        color: #6c757d !important;
-    }
+                                        <!-- Achievements -->
+                                        <?php if ($experience['achievements']): ?>
+                                            <div>
+                                                <h4 class="section-label">Achievements</h4>
+                                                <div class="description-text"><?= nl2br(esc($experience['achievements'])) ?></div>
+                                            </div>
+                                        <?php endif; ?>
 
-    @media (max-width: 768px) {
-        .experience-card img[alt*="company"] {
-            width: 40px !important;
-            height: 40px !important;
-        }
+                                        <!-- Skills -->
+                                        <?php if (!empty($experience['skills_used'])): ?>
+                                            <div>
+                                                <h4 class="section-label">Skills & Technologies</h4>
+                                                <div class="skills-container">
+                                                    <?php foreach ($experience['skills_used'] as $skill): ?>
+                                                        <span class="skill-badge"><?= esc($skill) ?></span>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
 
-        .display-5 {
-            font-size: 2rem;
-        }
-    }
+                                        <!-- Action Button -->
+                                        <a href="<?= base_url('work-experiences/' . $experience['id']) ?>" class="btn-detail">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                            View Full Details
+                                        </a>
+                                    </div>
 
-    /* Smooth hover effect for images */
-    a img {
-        transition: all 0.2s ease;
-    }
+                                    <!-- Right Column - Gallery Carousel -->
+                                    <div class="experience-right">
+                                        <?php if (!empty($experience['documentation_images'])): ?>
+                                            <div id="carousel-<?= $experience['id'] ?>" class="carousel slide gallery-carousel" data-bs-ride="carousel">
+                                                <div class="carousel-indicators">
+                                                    <?php foreach ($experience['documentation_images'] as $imgIndex => $image): ?>
+                                                        <button type="button"
+                                                            data-bs-target="#carousel-<?= $experience['id'] ?>"
+                                                            data-bs-slide-to="<?= $imgIndex ?>"
+                                                            <?= $imgIndex === 0 ? 'class="active" aria-current="true"' : '' ?>
+                                                            aria-label="Slide <?= $imgIndex + 1 ?>"></button>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                                <div class="carousel-inner">
+                                                    <?php foreach ($experience['documentation_images'] as $imgIndex => $image): ?>
+                                                        <div class="carousel-item <?= $imgIndex === 0 ? 'active' : '' ?>">
+                                                            <img src="<?= base_url('uploads/documentation/' . $image) ?>"
+                                                                class="d-block w-100"
+                                                                alt="<?= esc($experience['company_name']) ?> - Image <?= $imgIndex + 1 ?>">
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<?= $experience['id'] ?>" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="visually-hidden">Previous</span>
+                                                </button>
+                                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-<?= $experience['id'] ?>" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="visually-hidden">Next</span>
+                                                </button>
+                                            </div>
+                                        <?php else: ?>
+                                            <div class="no-gallery">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path d="M6.002 5.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z" />
+                                                    <path d="M2.002 1a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2h-12zm12 1a1 1 0 0 1 1 1v6.5l-3.777-1.947a.5.5 0 0 0-.577.093l-3.71 3.71-2.66-1.772a.5.5 0 0 0-.63.062L1.002 12V3a1 1 0 0 1 1-1h12z" />
+                                                </svg>
+                                                <p class="mb-0">No documentation available</p>
+                                            </div>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <div class="empty-state">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M6.5 1A1.5 1.5 0 0 0 5 2.5V3H1.5A1.5 1.5 0 0 0 0 4.5v8A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-8A1.5 1.5 0 0 0 14.5 3H11v-.5A1.5 1.5 0 0 0 9.5 1h-3zm0 1h3a.5.5 0 0 1 .5.5V3H6v-.5a.5.5 0 0 1 .5-.5zm1.886 6.914L15 7.151V12.5a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5V7.15l6.614 1.764a1.5 1.5 0 0 0 .772 0zM1.5 4h13a.5.5 0 0 1 .5.5v1.616L8.129 7.948a.5.5 0 0 1-.258 0L1 6.116V4.5a.5.5 0 0 1 .5-.5z" />
+                        </svg>
+                        <h5>No work experience found for <?= $selected_year ? 'year ' . $selected_year : 'selected filter' ?></h5>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</section>
 
-    a:hover img {
-        opacity: 0.85;
-    }
-
-    /* Clean border style */
-    .border-bottom {
-        border-color: #e9ecef !important;
-    }
-</style>
-
-<!-- Lightbox CSS & JS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+<!-- Stats Section -->
+<?php if (!empty($work_experiences)): ?>
+    <section class="stats-section">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number"><?= count($work_experiences) ?></div>
+                        <div class="stat-label">Roles</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number"><?= count(array_unique(array_column($work_experiences, 'company_name'))) ?></div>
+                        <div class="stat-label">Companies</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">
+                            <?php
+                            $totalYears = 0;
+                            foreach ($work_experiences as $exp) {
+                                $start = new DateTime($exp['start_date']);
+                                $end = $exp['end_date'] ? new DateTime($exp['end_date']) : new DateTime();
+                                $totalYears += $start->diff($end)->y;
+                            }
+                            echo $totalYears > 0 ? $totalYears . '+' : '<1';
+                            ?>
+                        </div>
+                        <div class="stat-label">Years</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-number">
+                            <?php
+                            $allSkills = [];
+                            foreach ($work_experiences as $exp) {
+                                $allSkills = array_merge($allSkills, $exp['skills_used']);
+                            }
+                            echo count(array_unique($allSkills));
+                            ?>
+                        </div>
+                        <div class="stat-label">Skills</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+<?php endif; ?>
 
 <!-- AOS Animation -->
 <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
@@ -226,12 +646,5 @@
         duration: 600,
         once: true,
         easing: 'ease-out'
-    });
-
-    // Lightbox options
-    lightbox.option({
-        'resizeDuration': 200,
-        'wrapAround': true,
-        'albumLabel': 'Image %1 of %2'
     });
 </script>
