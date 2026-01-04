@@ -25,4 +25,19 @@ class SkillPublicController extends Controller
 
         return view('skills/skill', $data);
     }
+    public function detail($id)
+    {
+        $skill = $this->skillModel->getSkillById($id);
+
+        if (!$skill) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Skill tidak ditemukan');
+        }
+
+        $data = [
+            'title' => $skill['skill_name'],
+            'skill' => $skill
+        ];
+
+        return view('skills/detail-skill', $data);
+    }
 }

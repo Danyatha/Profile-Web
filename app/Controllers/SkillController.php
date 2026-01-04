@@ -36,13 +36,13 @@ class SkillController extends Controller
         return view('control/skill/create-skill', $data);
     }
 
-    // Menyimpan data skill baru
     public function store()
     {
         $rules = [
             'skill_name' => 'required|max_length[100]',
             'category'   => 'required|max_length[100]',
             'description' => 'permit_empty|max_length[255]',
+            'image_path' => 'permit_empty|is_image[image_path]|mime_in[image_path,image/jpg,image/jpeg,image/png,image/webp]|max_size[image_path,2048]',
         ];
 
         if (!$this->validate($rules)) {
@@ -55,12 +55,17 @@ class SkillController extends Controller
             'description' => $this->request->getPost('description'),
         ];
 
-        if ($this->skillModel->save($data)) {
-            return redirect()->to('/admin/skills')->with('success', 'Skill berhasil ditambahkan');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan skill');
+        $image = $this->request->getFile('image_path');
+        if ($image && $image->isValid() && !$image->hasMoved()) {
+            $newName = $image->getRandomName();
+            $image->move(FCPATH . 'uploads/skills/', $newName);
+            $data['image_path'] = $newName;
         }
+
+        $this->skillModel->save($data);
+        return redirect()->to('/admin/skills')->with('success', 'Skill berhasil ditambahkan');
     }
+
 
     // Menampilkan form edit skill
     public function edit($id)

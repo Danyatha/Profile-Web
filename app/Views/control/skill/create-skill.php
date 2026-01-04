@@ -11,7 +11,7 @@
         </div>
     <?php endif; ?>
 
-    <form action="<?= base_url('admin/skills/store') ?>" method="post">
+    <form action="<?= site_url('admin/skills/store') ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field() ?>
 
         <div class="mb-3">
@@ -40,7 +40,14 @@
                 <div class="invalid-feedback"><?= $validation->getError('description') ?></div>
             <?php endif; ?>
         </div>
-
+        <div class="mb-3">
+            <label for="image_path" class="form-label">Gambar Skill</label>
+            <input type="file" class="form-control <?= (isset($validation) && $validation->hasError('image_path')) ? 'is-invalid' : '' ?>"
+                id="image_path" name="image_path" accept="image/*">
+            <?php if (isset($validation) && $validation->hasError('image_path')): ?>
+                <div class="invalid-feedback"><?= $validation->getError('image_path') ?></div>
+            <?php endif; ?>
+        </div>
         <button type="submit" class="btn btn-primary">Simpan</button>
         <a href="<?= base_url('admin/skills') ?>" class="btn btn-secondary">Kembali</a>
     </form>

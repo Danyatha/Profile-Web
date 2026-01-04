@@ -53,7 +53,7 @@
 
                     <!-- Skills Card -->
                     <div class="col-12 col-md-6 col-lg-4">
-                        <a href="#skills" class="menu-card d-block text-decoration-none">
+                        <a href="<?= base_url('skills') ?>" class="menu-card d-block text-decoration-none">
                             <div class="card h-100 shadow-sm overflow-hidden">
                                 <img src="<?= base_url('images/skills.webp') ?>" alt="Skills" class="card-img-top" style="height:200px; object-fit:cover; object-position:50% 60%;" loading="lazy">
                                 <div class="card-body d-flex flex-column">

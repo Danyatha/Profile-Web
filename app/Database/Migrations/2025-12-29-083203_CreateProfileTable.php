@@ -59,6 +59,6 @@ class CreateProfileTable extends Migration
 
     public function down()
     {
-        //
+        $this->forge->dropTable('profiles');
     }
 }

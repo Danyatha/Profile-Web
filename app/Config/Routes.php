@@ -37,6 +37,7 @@ $routes->group('admin', function ($routes) {
         $routes->post('update/(:num)', 'SkillController::update/$1');
         $routes->delete('delete/(:num)', 'SkillController::delete/$1');
         $routes->post('delete/(:num)', 'SkillController::delete/$1');
+        $routes->get('delete/(:num)', 'SkillController::delete/$1');
     });
     $routes->get('profile', 'ProfileController::index', ['filter' => 'auth']);
 });
@@ -45,3 +46,4 @@ $routes->get('work-experiences', 'ExperiencePublicController::index');
 $routes->get('work-experiences/(:num)', 'ExperiencePublicController::detail/$1');
 
 $routes->get('skills', 'SkillPublicController::index');
+$routes->get('skills/(:num)', 'SkillPublicController::detail/$1');

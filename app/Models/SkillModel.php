@@ -12,7 +12,7 @@ class SkillModel extends Model
     protected $returnType       = 'array';
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
-    protected $allowedFields    = ['skill_name', 'category', 'description'];
+    protected $allowedFields    = ['skill_name', 'category', 'description', 'image_path'];
 
     // Dates
     protected $useTimestamps = true;
@@ -51,5 +51,15 @@ class SkillModel extends Model
             ->orLike('category', $keyword)
             ->orLike('description', $keyword)
             ->findAll();
+    }
+    public function getSkillById($id)
+    {
+        $skill = $this->find($id);
+        if ($skill) {
+            $skill['description'] = nl2br($skill['description']);
+            $skill['category'] = explode(',', $skill['category']);
+            $skill['skill_name'] = explode(',', $skill['skill_name']);
+        }
+        return $skill;
     }
 }

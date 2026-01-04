@@ -30,6 +30,11 @@ class CreateSkillsTable extends Migration
                 'constraint' => '255',
                 'null' => true,
             ],
+            'image_path' => [
+                'type' => 'VARCHAR',
+                'constraint' => '255',
+                'null' => true,
+            ],
             'created_at' => [
                 'type'    => 'DATETIME',
                 'null'    => true,
