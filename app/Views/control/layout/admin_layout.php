@@ -179,11 +179,20 @@
                 <i class="bi bi-building"></i>
                 <span>Work Experiences</span>
             </a>
+            <a href="<?= base_url('admin/achievement') ?>" class="<?= uri_string() == 'admin/achievements' ? 'active' : '' ?>">
+                <i class="bi bi-trophy"></i>
+                <span>Achievements</span>
+            </a>
             <a href="<?= base_url('admin/certificates') ?>" class="<?= uri_string() == 'admin/certificates' ? 'active' : '' ?>">
                 <i class="bi bi-award"></i>
                 <span>Certificates</span>
             </a>
+            <a href="<?= base_url('admin/social-media') ?>" class="<?= uri_string() == 'admin/social-media' ? 'active' : '' ?>">
+                <i class="bi bi-share"></i>
+                <span>Social Media</span>
+            </a>
             <hr style="border-color: rgba(255,255,255,0.1); margin: 20px;">
+
             <a href="<?= base_url('admin/logout') ?>" onclick="return confirm('Are you sure you want to logout?')">
                 <i class="bi bi-box-arrow-right"></i>
                 <span>Logout</span>

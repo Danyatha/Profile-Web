@@ -333,7 +333,6 @@
         font-size: 1.3em;
         margin-top: 100px;
         padding: 80px 40px;
-        background: linear-gradient(145deg, #242424 0%, #1a1a1a 100%);
         border: 1px solid rgba(255, 255, 255, 0.1);
         border-radius: 16px;
     }
@@ -381,8 +380,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-10 mx-auto text-center">
-                <h1 class="display-5">Skills</h1>
-                <p class="text-muted">Tools, technologies, and skills I work with</p>
+                <h1 class="display-5"><?= esc($title) ?></h1>
+                <p class="text-muted"><?= esc($subtitle) ?></p>
             </div>
         </div>
     </div>
@@ -481,7 +480,7 @@
 
     <?php else: ?>
         <div class="no-skills">
-            <p>Belum ada skills yang ditambahkan.</p>
+            <p>No skills added yet.</p>
         </div>
     <?php endif; ?>
 </div>

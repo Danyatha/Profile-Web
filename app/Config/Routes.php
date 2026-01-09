@@ -39,6 +39,22 @@ $routes->group('admin', function ($routes) {
         $routes->post('delete/(:num)', 'SkillController::delete/$1');
         $routes->get('delete/(:num)', 'SkillController::delete/$1');
     });
+    $routes->group('achievement', function ($routes) {
+        $routes->get('/', 'AchievementController::index');
+        $routes->get('create', 'AchievementController::create');
+        $routes->post('store', 'AchievementController::store');
+        $routes->get('show/(:num)', 'AchievementController::show/$1');
+        $routes->get('edit/(:num)', 'AchievementController::edit/$1');
+        $routes->post('update/(:num)', 'AchievementController::update/$1');
+        $routes->get('delete/(:num)', 'AchievementController::delete/$1');
+    });
+    $routes->group('social-media', function ($routes) {
+        $routes->get('/', 'SocialMediaController::index');
+        $routes->post('create', 'SocialMediaController::create');
+        $routes->get('edit/(:num)', 'SocialMediaController::edit/$1');
+        $routes->post('update/(:num)', 'SocialMediaController::update/$1');
+        $routes->get('delete/(:num)', 'SocialMediaController::delete/$1');
+    });
     $routes->get('profile', 'ProfileController::index', ['filter' => 'auth']);
 });
 
@@ -47,3 +63,9 @@ $routes->get('work-experiences/(:num)', 'ExperiencePublicController::detail/$1')
 
 $routes->get('skills', 'SkillPublicController::index');
 $routes->get('skills/(:num)', 'SkillPublicController::detail/$1');
+
+$routes->get('achievement', 'AchievementPublicController::index');
+$routes->get('achievement/(:num)', 'AchievementPublicController::detail/$1');
+
+$routes->get('social-media', 'SocialMediaPublicController::index');
+$routes->get('social-media/(:num)', 'SocialMediaPublicController::detail/$1');

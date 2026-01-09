@@ -81,7 +81,7 @@
 
                     <!-- Certifications Card -->
                     <div class="col-12 col-md-6 col-lg-4">
-                        <a href="#sertifikat" class="menu-card d-block text-decoration-none">
+                        <a href="<?= base_url('achievement') ?>" class="menu-card d-block text-decoration-none">
                             <div class="card h-100 shadow-sm overflow-hidden">
                                 <img src="<?= base_url('images/work-experience.webp') ?>" alt="Certifications" class="card-img-top" style="height:200px; object-fit:cover; object-position:50% 60%;" loading="lazy">
                                 <div class="card-body d-flex flex-column">
@@ -95,7 +95,7 @@
 
                     <!-- Contact Card -->
                     <div class="col-12 col-md-6 col-lg-4">
-                        <a href="#contact" class="menu-card d-block text-decoration-none">
+                        <a href="<?= base_url('social-media') ?>" class="menu-card d-block text-decoration-none">
                             <div class="card h-100 shadow-sm overflow-hidden">
                                 <img src="<?= base_url('images/call-me.webp') ?>" alt="Contact" class="card-img-top" style="height:200px; object-fit:cover; object-position:50% 60%;" loading="lazy">
                                 <div class="card-body d-flex flex-column">

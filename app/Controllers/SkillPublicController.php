@@ -19,7 +19,8 @@ class SkillPublicController extends Controller
     public function index()
     {
         $data = [
-            'title' => 'Daftar Skills',
+            'title' => 'Skills',
+            'subtitle' => 'Tools, technologies, and skills I work with',
             'skills' => $this->skillModel->findAll()
         ];
 
