@@ -7,7 +7,7 @@
             <!-- University -->
             <div class="edu-item">
                 <div class="edu-image">
-                    <img src="<?= base_url('images/education/university.jpg'); ?>" alt="University" loading="lazy">
+                    <img src="<?= base_url('images/ugm.webp'); ?>" alt="University" loading="lazy">
                     <div class="edu-overlay">
                         <span class="edu-level">University</span>
                     </div>
@@ -25,7 +25,7 @@
             <!-- Senior High School -->
             <div class="edu-item">
                 <div class="edu-image">
-                    <img src="<?= base_url('images/education/high-school.jpg'); ?>" alt="High School" loading="lazy">
+                    <img src="<?= base_url('images/sago.jpg'); ?>" alt="High School" loading="lazy">
                     <div class="edu-overlay">
                         <span class="edu-level">Senior High School</span>
                     </div>
@@ -43,7 +43,7 @@
             <!-- Junior High School -->
             <div class="edu-item">
                 <div class="edu-image">
-                    <img src="<?= base_url('images/education/junior-high.jpg'); ?>" alt="Junior High" loading="lazy">
+                    <img src="<?= base_url('images/spenzaka.png'); ?>" alt="Junior High" loading="lazy">
                     <div class="edu-overlay">
                         <span class="edu-level">Junior High School</span>
                     </div>
@@ -61,7 +61,7 @@
             <!-- Elementary School -->
             <div class="edu-item">
                 <div class="edu-image">
-                    <img src="<?= base_url('images/education/elementary.jpg'); ?>" alt="Elementary" loading="lazy">
+                    <img src="<?= base_url('images/sd5.webp'); ?>" alt="Elementary" loading="lazy">
                     <div class="edu-overlay">
                         <span class="edu-level">Elementary School</span>
                     </div>

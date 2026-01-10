@@ -37,15 +37,6 @@
                     </svg>
                 </a>
             </div>
-            <div class="auth-links">
-                <?php if (auth()->loggedIn()): ?>
-                    <a href="<?= base_url('admin/dashboard') ?>">Dashboard</a>
-                    <a href="<?= site_url('logout') ?>" class="auth-link">Logout</a>
-                <?php else: ?>
-                    <a href="<?= site_url('login') ?>">Login</a>
-                    <a href="<?= site_url('register') ?>">Register</a>
-                <?php endif; ?>
-            </div>
             <button class="mobile-toggle" onclick="toggleMobileMenu()">
                 <span></span>
                 <span></span>

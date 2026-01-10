@@ -88,7 +88,7 @@
     }
 
     .timeline-content {
-        width: 50%;
+        width: 70%;
         padding: 25px;
         border-radius: 15px;
         cursor: pointer;

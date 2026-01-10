@@ -55,6 +55,15 @@ $routes->group('admin', function ($routes) {
         $routes->post('update/(:num)', 'SocialMediaController::update/$1');
         $routes->get('delete/(:num)', 'SocialMediaController::delete/$1');
     });
+    $routes->group('portfolio', function ($routes) {
+        $routes->get('/', 'PortfolioController::index');
+        $routes->get('create', 'PortfolioController::create');
+        $routes->post('store', 'PortfolioController::store');
+        $routes->get('show/(:num)', 'PortfolioController::show/$1');
+        $routes->get('edit/(:num)', 'PortfolioController::edit/$1');
+        $routes->post('update/(:num)', 'PortfolioController::update/$1');
+        $routes->get('delete/(:num)', 'PortfolioController::delete/$1');
+    });
     $routes->get('profile', 'ProfileController::index', ['filter' => 'auth']);
 });
 
@@ -69,3 +78,7 @@ $routes->get('achievement/(:num)', 'AchievementPublicController::detail/$1');
 
 $routes->get('social-media', 'SocialMediaPublicController::index');
 $routes->get('social-media/(:num)', 'SocialMediaPublicController::detail/$1');
+
+$routes->get('portfolio', 'PortfolioPublicController::index');
+$routes->get('portfolio/(:num)', 'PortfolioPublicController::detail/$1');
+$routes->get('portfolio-filter', 'PortfolioPublicController::filter');

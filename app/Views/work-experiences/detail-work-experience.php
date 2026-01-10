@@ -437,7 +437,7 @@
         <div>
             <a href="<?= base_url('/work-experiences'); ?>" class="back-button">&#8592; Back to Experiences</a>
         </div>
-        <img src="<?= base_url('images/trolling-one.webp') ?>" class="bg-profile-image" alt="bg-profile-image" loading="lazy"
+        <img src="<?= base_url('images/serious-one.webp') ?>" class="bg-profile-image" alt="bg-profile-image" loading="lazy"
             style="object-fit: cover; 
                 object-position: 10% 30%; 
                 min-height: 300px; 

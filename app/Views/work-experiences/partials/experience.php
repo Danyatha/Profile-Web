@@ -432,8 +432,8 @@
     <div class="container">
         <div class="row">
             <div class="col-lg-10 mx-auto text-center">
-                <h1 class="display-5">Work Experience</h1>
-                <p class="text-muted">My professional journey and achievements</p>
+                <h1 class="display-5"><?= esc($title) ?></h1>
+                <p class="text-muted"><?= esc($subtitle) ?></p>
             </div>
         </div>
     </div>

@@ -6,36 +6,65 @@ use CodeIgniter\Model;
 
 class PortfolioModel extends Model
 {
-    protected $table = 'portfolios';
-    protected $primaryKey = 'id';
-    protected $returnType = 'array';
-    protected $allowedFields = [
-        'id',
-        'title',
-        'image',
+    protected $table            = 'portfolios';
+    protected $primaryKey       = 'id';
+    protected $useAutoIncrement = true;
+    protected $returnType       = 'array';
+    protected $useSoftDeletes   = false;
+    protected $protectFields    = true;
+    protected $allowedFields    = [
+        'project_name',
         'description',
-        'created_at',
-        'updated_at'
+        'technologies_used',
+        'project_url',
+        'images_path'
     ];
+
+    // Dates
     protected $useTimestamps = true;
+    protected $dateFormat    = 'datetime';
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
+
+    // Validation
     protected $validationRules = [
-        'title' => 'required|min_length[3]|max_length[255]',
-        'image' => 'required|valid_url',
-        'description' => 'required|min_length[10]',
+        'project_name' => 'required|min_length[3]|max_length[150]',
+        'description'  => 'permit_empty',
+        'technologies_used' => 'permit_empty|max_length[255]',
+        'project_url'  => 'permit_empty|valid_url|max_length[255]',
+        'images_path'  => 'permit_empty|max_length[255]',
     ];
+
     protected $validationMessages = [
-        'title' => [
-            'required' => 'Title is required',
-            'min_length' => 'Title must be at least 3 characters long',
-            'max_length' => 'Title cannot exceed 255 characters',
+        'project_name' => [
+            'required'    => 'Nama project harus diisi',
+            'min_length'  => 'Nama project minimal 3 karakter',
+            'max_length'  => 'Nama project maksimal 150 karakter',
         ],
-        'image' => [
-            'required' => 'Image URL is required',
-            'valid_url' => 'Image must be a valid URL',
-        ],
-        'description' => [
-            'required' => 'Description is required',
-            'min_length' => 'Description must be at least 10 characters long',
+        'project_url' => [
+            'valid_url' => 'URL project tidak valid',
         ],
     ];
+
+    protected $skipValidation       = false;
+    protected $cleanValidationRules = true;
+
+    // Custom methods
+    public function getAllPortfolios()
+    {
+        return $this->orderBy('created_at', 'DESC')->findAll();
+    }
+
+    public function getPortfolioById($id)
+    {
+        return $this->find($id);
+    }
+
+    public function searchPortfolios($keyword)
+    {
+        return $this->like('project_name', $keyword)
+            ->orLike('description', $keyword)
+            ->orLike('technologies_used', $keyword)
+            ->findAll();
+    }
 }

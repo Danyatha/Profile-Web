@@ -173,12 +173,12 @@
         transform: scale(1.02);
     }
 
-    .social-card:hover .card-shine {
+    /* .social-card:hover .card-shine {
         opacity: 1;
         animation: shine 1.5s ease;
-    }
+    } */
 
-    @keyframes shine {
+    /* @keyframes shine {
         0% {
             transform: translateX(-100%) translateY(-100%) rotate(45deg);
         }
@@ -186,7 +186,7 @@
         100% {
             transform: translateX(100%) translateY(100%) rotate(45deg);
         }
-    }
+    } */
 
     .hover-lift {
         transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);

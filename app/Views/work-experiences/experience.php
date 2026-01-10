@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Saya</title>
+    <title><?= esc($title) ?></title>
     <link rel="stylesheet" href="<?= base_url('css/experience-style.css'); ?>">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
@@ -20,7 +20,7 @@
         <div>
             <a href="<?= base_url('/'); ?>" class="back-button">&#8592; Back to Home</a>
         </div>
-        <img src="<?= base_url('images/trolling-one.webp') ?>" class="bg-profile-image" alt="bg-profile-image" loading="lazy" style="object-fit: cover;">
+        <img src="<?= base_url('images/serious-one.webp') ?>" class="bg-profile-image" alt="bg-profile-image" loading="lazy" style="object-fit: cover;">
         <div class="container header-content">
             <img src="<?= base_url('images/hero-img.jpg'); ?>" alt="Profile Picture" class="profile-image" loading="lazy" style="object-fit: cover; object-position: 56% 80%;">
             <h1 class="title">Dany Atha Najib</h1>

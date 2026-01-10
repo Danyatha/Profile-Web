@@ -35,8 +35,8 @@ class ExperiencePublicController extends BaseController
             'work_experiences' => $experiences,
             'available_years' => $availableYears,
             'selected_year' => $year,
-            'title' => 'Pengalaman Kerja',
-            'meta_description' => 'Lihat pengalaman kerja dan perjalanan karir profesional saya'
+            'title' => 'Work Experiences',
+            'subtitle' => 'see my work experiences and professional journey over the years'
         ];
 
         return view('work-experiences/experience', $data);
@@ -50,13 +50,13 @@ class ExperiencePublicController extends BaseController
         $workExperience = $this->WorkExperienceModel->getWorkExperienceById($id);
 
         if (!$workExperience) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Pengalaman kerja tidak ditemukan');
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('work experience not found');
         }
 
         $data = [
             'work_experience' => $workExperience,
             'title' => $workExperience['position'] . ' - ' . $workExperience['company_name'],
-            'meta_description' => 'Detail pengalaman kerja sebagai ' . $workExperience['position'] . ' di ' . $workExperience['company_name']
+            'subtitle' => 'Detail my experience as ' . $workExperience['position'] . ' di ' . $workExperience['company_name']
         ];
 
         return view('work-experiences/detail-work-experience', $data);
@@ -101,7 +101,7 @@ class ExperiencePublicController extends BaseController
         $data = [
             'work_experiences' => $experiences,
             'company_name' => $companyName,
-            'title' => 'Pengalaman di ' . $companyName
+            'title' => 'Experience at ' . $companyName
         ];
 
         return view('work-experiences/experience', $data);
@@ -125,7 +125,7 @@ class ExperiencePublicController extends BaseController
 
         $data = [
             'work_experiences' => $experiences,
-            'title' => 'Pekerjaan Saat Ini',
+            'title' => 'Current Work',
             'is_current' => true
         ];
 

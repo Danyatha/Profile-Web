@@ -1,76 +1,109 @@
 <style>
     :root {
-        --gradient-primary: linear-gradient(135deg, #f8f9ff 0%, #f1f3ff 100%);
-        --gradient-secondary: linear-gradient(135deg, #444 0%, #111 100%);
+        --color-dark: #0a0a0a;
+        --color-charcoal: #1a1a1a;
+        --color-slate: #2a2a2a;
+        --color-smoke: #3a3a3a;
+        --color-ash: #888888;
+        --color-silver: #c0c0c0;
+        --color-platinum: #e8e8e8;
+        --color-white: #ffffff;
+        --color-accent: #f5f5f5;
     }
 
     .hero-section {
-        background: var(--gradient-primary);
-        border-bottom: 1px solid #e3e6f0;
-        padding: 3rem 0;
+        background: linear-gradient(180deg, var(--color-white) 0%, var(--color-accent) 100%);
+        border-bottom: 1px solid var(--color-platinum);
+        padding: 4rem 0 3rem;
+        position: relative;
+    }
+
+    .hero-section::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 2px;
+        background: var(--color-dark);
     }
 
     .hero-section .display-5 {
-        font-size: 2.5rem;
+        font-size: 2.8rem;
         font-weight: 300;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+        color: var(--color-dark);
+        margin-bottom: 0.75rem;
     }
 
     .hero-section .text-muted {
-        font-size: 1.1rem;
-        color: #6c757d;
+        font-size: 1rem;
+        font-weight: 300;
+        color: var(--color-ash);
+        letter-spacing: 0.01em;
     }
 
     .achievement-card {
-        transition: all 0.3s ease;
-        border: none;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid var(--color-platinum);
+        background: var(--color-white);
         overflow: hidden;
+        border-radius: 0;
     }
 
     .achievement-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 0.8rem 1.5rem rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08) !important;
+        border-color: var(--color-dark);
     }
 
     .achievement-image-wrapper {
         position: relative;
         overflow: hidden;
-        height: 200px;
+        height: 280px;
+        background: var(--color-charcoal);
     }
 
     .achievement-image {
         width: 100%;
-        height: 200px;
+        height: 280px;
         object-fit: cover;
-        transition: all 0.4s ease;
-        filter: brightness(0.7);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        filter: grayscale(100%) contrast(1.1);
+        opacity: 0.85;
     }
 
     .achievement-card:hover .achievement-image {
-        filter: brightness(1);
-        transform: scale(1.05);
+        opacity: 1;
+        transform: scale(1.03);
+        filter: grayscale(0%) contrast(1.15);
     }
 
     .achievement-image-placeholder {
         width: 100%;
-        height: 200px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        height: 280px;
+        background: linear-gradient(135deg, var(--color-charcoal) 0%, var(--color-slate) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.4s ease;
-        filter: brightness(0.7);
+        transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .achievement-image-placeholder i {
-        font-size: 4rem;
-        color: rgba(255, 255, 255, 0.8);
+        font-size: 4.5rem;
+        color: var(--color-silver);
+        transition: all 0.4s ease;
     }
 
     .achievement-card:hover .achievement-image-placeholder {
-        filter: brightness(1);
-        transform: scale(1.05);
+        background: linear-gradient(135deg, var(--color-slate) 0%, var(--color-smoke) 100%);
+        transform: scale(1.03);
+    }
+
+    .achievement-card:hover .achievement-image-placeholder i {
+        transform: scale(1.1);
+        color: var(--color-platinum);
     }
 
     .achievement-overlay {
@@ -79,19 +112,19 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 0.7);
         display: flex;
         align-items: center;
         justify-content: center;
         opacity: 0;
-        transition: opacity 0.3s ease;
+        transition: opacity 0.4s ease;
     }
 
     .achievement-overlay i {
-        color: white;
-        font-size: 2.5rem;
-        transform: scale(0.5);
-        transition: transform 0.3s ease;
+        color: var(--color-white);
+        font-size: 2rem;
+        transform: scale(0.8);
+        transition: transform 0.4s ease;
     }
 
     .achievement-card:hover .achievement-overlay {
@@ -102,45 +135,224 @@
         transform: scale(1);
     }
 
+    .card-body {
+        padding: 2rem 1.75rem;
+        background: var(--color-white);
+    }
+
+    .badge {
+        padding: 0.5rem 1.25rem;
+        font-weight: 400;
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        border-radius: 0;
+    }
+
+    .bg-primary {
+        background: var(--color-dark) !important;
+        color: var(--color-white) !important;
+    }
+
+    .bg-secondary {
+        background: transparent !important;
+        color: var(--color-ash) !important;
+        border: 1px solid var(--color-platinum) !important;
+    }
+
+    .text-muted {
+        color: var(--color-ash) !important;
+    }
+
+    .fw-semibold {
+        font-weight: 400 !important;
+        color: var(--color-ash) !important;
+        font-size: 0.9rem;
+    }
+
+    .card-title {
+        color: var(--color-dark);
+        line-height: 1.4;
+        font-weight: 400;
+        font-size: 1.25rem;
+        letter-spacing: -0.01em;
+        margin-bottom: 1.25rem;
+    }
+
+    .card-body p {
+        color: var(--color-ash);
+        font-size: 0.9rem;
+        font-weight: 300;
+        line-height: 1.6;
+    }
+
+    .card-body p i {
+        color: var(--color-silver);
+        font-size: 0.85rem;
+    }
+
+    .card-footer {
+        padding: 1.5rem 1.75rem;
+        background: transparent !important;
+        border-top: 1px solid var(--color-platinum) !important;
+    }
+
     .view-detail-btn {
         transition: all 0.3s ease;
+        border: 1px solid var(--color-dark) !important;
+        color: var(--color-dark) !important;
+        background: transparent !important;
+        font-size: 0.85rem;
+        font-weight: 400;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0 !important;
     }
 
     .view-detail-btn:hover {
-        transform: translateX(5px);
+        background: var(--color-dark) !important;
+        color: var(--color-white) !important;
+        transform: translateY(-2px);
+    }
+
+    .view-detail-btn i {
+        transition: transform 0.3s ease;
+    }
+
+    .view-detail-btn:hover i {
+        transform: translateX(4px);
+    }
+
+    .modal-content {
+        border: none;
+        border-radius: 0;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        padding: 2rem 2.5rem 1.5rem;
+        border-bottom: 1px solid var(--color-platinum) !important;
+    }
+
+    .modal-title {
+        font-weight: 400;
+        font-size: 1.5rem;
+        letter-spacing: -0.01em;
+        color: var(--color-dark);
+    }
+
+    .modal-body {
+        padding: 2.5rem;
+    }
+
+    .modal-footer {
+        padding: 1.5rem 2.5rem 2rem;
+        border-top: 1px solid var(--color-platinum) !important;
     }
 
     .modal-image-placeholder {
         width: 100%;
         height: 300px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(135deg, var(--color-charcoal) 0%, var(--color-slate) 100%);
         display: flex;
         align-items: center;
         justify-content: center;
+        border-radius: 0;
     }
 
     .modal-image-placeholder i {
         font-size: 5rem;
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--color-silver);
     }
 
-    .modal-content {
-        border: none;
-        border-radius: 15px;
+    #modalImage {
+        border-radius: 0;
+        filter: grayscale(0%) contrast(1.1);
     }
 
-    .badge {
-        padding: 0.5rem 1rem;
+    .modal-body h6 {
+        font-size: 0.75rem;
         font-weight: 500;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-dark);
+        margin-bottom: 0.75rem;
     }
 
-    .card-title {
-        color: #2c3e50;
-        line-height: 1.4;
+    .modal-body h6 i {
+        font-size: 0.85rem;
+        color: var(--color-ash) !important;
     }
 
-    .card-footer {
-        padding: 1rem 1.25rem;
+    .modal-body p {
+        color: var(--color-smoke);
+        font-weight: 300;
+        line-height: 1.7;
+    }
+
+    .btn-secondary {
+        background: var(--color-dark) !important;
+        border: 1px solid var(--color-dark) !important;
+        color: var(--color-white) !important;
+        font-size: 0.85rem;
+        font-weight: 400;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 0.75rem 2rem;
+        border-radius: 0;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: var(--color-charcoal) !important;
+        border-color: var(--color-charcoal) !important;
+    }
+
+    .btn-close {
+        opacity: 0.5;
+        transition: opacity 0.3s ease;
+    }
+
+    .btn-close:hover {
+        opacity: 1;
+    }
+
+    .alert-info {
+        background: var(--color-accent);
+        border: 1px solid var(--color-platinum);
+        color: var(--color-ash);
+        border-radius: 0;
+        padding: 2rem;
+        font-weight: 300;
+    }
+
+    hr {
+        border-color: var(--color-platinum) !important;
+        opacity: 1;
+        margin: 2rem 0;
+    }
+
+    .shadow-sm {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+    }
+
+    .fw-bold {
+        font-weight: 400 !important;
+    }
+
+    .fs-2 {
+        font-size: 2.5rem !important;
+        letter-spacing: -0.02em;
+    }
+
+    .fs-5 {
+        font-size: 1.05rem !important;
+        font-weight: 300;
+    }
+
+    .container {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
 </style>
 <div class="container py-5">
