@@ -2,7 +2,7 @@
     <div class="container">
         <div class="header-content">
             <div class="logo">
-                <img src="<?= base_url('images/logo-header-img.webp') ?>" alt="Logo" class="logo-image" onclick="openFullSize(this)" />
+                <img src="<?= base_url('images/logo-header-img.webp') ?>" alt="Logo" class="logo-image" />
                 <span class="logo-text">Dany Atha Najib</span>
             </div>
             <nav class="main-nav">
@@ -273,17 +273,5 @@
 
         const toggle = document.querySelector('.mobile-toggle');
         toggle.classList.toggle('active');
-    }
-
-    function openFullSize(img) {
-        const modal = document.getElementById('imgModal');
-        const modalImg = document.getElementById('modalImg');
-
-        modal.style.display = 'block';
-        modalImg.src = img.src;
-    }
-
-    function closeModal() {
-        document.getElementById('imgModal').style.display = 'none';
     }
 </script>

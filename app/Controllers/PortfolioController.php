@@ -57,7 +57,9 @@ class PortfolioController extends Controller
     // Menyimpan data portfolio baru
     public function store()
     {
-        if (!$this->validate($this->portfolioModel->validationRules)) {
+        if (!$this->validate(
+            $this->portfolioModel->getValidationRules()
+        )) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
@@ -99,7 +101,9 @@ class PortfolioController extends Controller
     // Update data portfolio
     public function update($id)
     {
-        if (!$this->validate($this->portfolioModel->validationRules)) {
+        if (!$this->validate(
+            $this->portfolioModel->getValidationRules()
+        )) {
             return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
         }
 
