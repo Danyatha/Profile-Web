@@ -102,8 +102,7 @@
                                     class="form-control <?= $validation->hasError('end_date') ? 'is-invalid' : '' ?>"
                                     id="end_date"
                                     name="end_date"
-                                    value="<?= old('end_date') ?>"
-                                    disabled>
+                                    value="<?= old('end_date') ?>">
                                 <?php if ($validation->hasError('end_date')): ?>
                                     <div class="invalid-feedback"><?= $validation->getError('end_date') ?></div>
                                 <?php endif; ?>
@@ -269,10 +268,8 @@
 
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', function() {
-        const isCurrentCheckbox = document.getElementById('is_current');
-        if (isCurrentCheckbox.checked) {
-            toggleEndDate(isCurrentCheckbox);
-        }
+        const checkbox = document.getElementById('is_current');
+        toggleEndDate(checkbox);
     });
 </script>
 

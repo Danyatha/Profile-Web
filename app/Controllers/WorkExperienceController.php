@@ -58,7 +58,7 @@ class WorkExperienceController extends BaseController
             'job_description' => $this->request->getPost('job_description'),
             'start_date' => $this->request->getPost('start_date'),
             'end_date' => $this->request->getPost('end_date'),
-            'is_current' => $this->request->getPost('is_current') ? 1 : 0,
+            'is_current' => $this->request->getPost('is_current') == '1',
             'achievements' => $this->request->getPost('achievements'),
             'skills_used' => $this->request->getPost('skills_used') ? explode(',', $this->request->getPost('skills_used')) : []
         ];
@@ -158,7 +158,7 @@ class WorkExperienceController extends BaseController
             'job_description' => $this->request->getPost('job_description'),
             'start_date' => $this->request->getPost('start_date'),
             'end_date' => $this->request->getPost('end_date'),
-            'is_current' => $this->request->getPost('is_current') ? 1 : 0,
+            'is_current' => $this->request->getPost('is_current') == '1',
             'achievements' => $this->request->getPost('achievements'),
             'skills_used' => $this->request->getPost('skills_used') ? explode(',', $this->request->getPost('skills_used')) : []
         ];

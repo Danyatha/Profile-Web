@@ -5,7 +5,7 @@ namespace App\Controllers;
 use App\Models\CertificationModel;
 use CodeIgniter\RESTful\ResourceController;
 
-class Certifications extends ResourceController
+class CertificationController extends ResourceController
 {
     protected $modelName = 'App\Models\CertificationModel';
     protected $format    = 'json';

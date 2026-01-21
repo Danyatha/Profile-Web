@@ -58,7 +58,7 @@
     /* Skills Grid */
     .skills-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
         gap: 20px;
     }
 
@@ -72,7 +72,7 @@
     }
 
     .skill-card:hover {
-        transform: scale(1.08);
+        transform: scale(1.05);
         z-index: 10;
     }
 
@@ -83,14 +83,12 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: #1a1a1a;
     }
 
     .skill-image {
         width: 100%;
         height: 100%;
-        object-fit: cover;
-        filter: grayscale(80%) brightness(0.6);
+        object-fit: contain;
         transition: all 0.5s ease;
     }
 
@@ -183,7 +181,7 @@
         gap: 8px;
         background: #ffffff;
         color: #000000;
-        padding: 10px 20px;
+        padding: 5px 10px;
         border-radius: 8px;
         text-decoration: none;
         font-weight: 700;
@@ -213,7 +211,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background: rgba(255, 255, 255, 0.9);
+        background: rgba(32, 32, 32, 0.64);
         z-index: 1000;
         padding: 40px 20px;
         overflow-y: auto;
@@ -237,7 +235,6 @@
     }
 
     .modal-content {
-        background: var(--gradient-primary);
         border: 1px solid rgba(255, 255, 255, 0.2);
         border-radius: 20px;
         max-width: 900px;
@@ -286,7 +283,7 @@
     .modal-image {
         width: 100%;
         height: 400px;
-        object-fit: cover;
+        object-fit: contain;
         filter: grayscale(50%);
     }
 
