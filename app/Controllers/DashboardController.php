@@ -2,77 +2,49 @@
 
 namespace App\Controllers;
 
-use CodeIgniter\Controller;
+use App\Models\AchievementModel;
+use App\Models\CertificationModel;
+use App\Models\PortfolioModel;
+use App\Models\SkillModel;
+use App\Models\WorkExperienceModel;
 
-class DashboardController extends Controller
+/**
+ * DashboardController
+ *
+ * Loads real counts from models instead of hard-coded values.
+ * Each management page simply passes the title; the view fetches its
+ * own data via AJAX or a dedicated controller.
+ */
+class DashboardController extends BaseAdminController
 {
-    // Dashboard
     public function dashboard()
     {
-
-        $data = [
-            'title' => 'Dashboard Admin',
-            'total_portfolio' => 12,
-            'total_skills' => 8,
-            'total_certificates' => 15,
-            'total_experiences' => 5
-        ];
-
-        return view('control/dashboard', $data);
+        return view('control/dashboard', [
+            'title'               => 'Dashboard Admin',
+            'total_portfolio'     => (new PortfolioModel())->countAllResults(),
+            'total_skills'        => (new SkillModel())->countAllResults(),
+            'total_certificates'  => (new CertificationModel())->countAllResults(),
+            'total_experiences'   => (new WorkExperienceModel())->countAllResults(),
+        ]);
     }
 
-    // Portfolio Management
     public function portfolio()
     {
-
-        $data = [
-            'title' => 'Manage Portfolio'
-        ];
-
-        return view('control/portfolio', $data);
+        return view('control/portfolio', ['title' => 'Manage Portfolio']);
     }
 
-    // Skills Management
     public function skills()
     {
-
-        $data = [
-            'title' => 'Manage Skills'
-        ];
-
-        return view('admin/skills', $data);
+        return view('admin/skills', ['title' => 'Manage Skills']);
     }
 
-    // Certificates Management
-    // public function certificates()
-    // {
-
-    //     $data = [
-    //         'title' => 'Manage Certificates'
-    //     ];
-
-    //     return view('admin/certificates', $data);
-    // }
-
-    // Work Experience Management
     public function experiences()
     {
-
-        $data = [
-            'title' => 'Manage Work Experiences'
-        ];
-
-        return view('control/work-experience-index', $data);
+        return view('control/work-experience-index', ['title' => 'Manage Work Experiences']);
     }
 
-    // Profile Management
     public function profile()
     {
-
-        $data = [
-            'title' => 'Manage Profile'
-        ];
-
-        return view('admin/profile', $data);
+        return view('admin/profile', ['title' => 'Manage Profile']);
     }
 }

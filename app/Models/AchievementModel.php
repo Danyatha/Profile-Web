@@ -19,17 +19,16 @@ class AchievementModel extends Model
         'description',
         'start_date',
         'end_date',
-        'images_path'
+        'images_path',
     ];
 
-    // Dates
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
     // Validation
-    protected $validationRules      = [
+    protected $validationRules = [
         'title'       => 'required|min_length[3]|max_length[150]',
         'event_name'  => 'required|min_length[3]|max_length[150]',
         'achievement' => 'required|min_length[3]|max_length[100]',
@@ -38,7 +37,7 @@ class AchievementModel extends Model
         'end_date'    => 'permit_empty|valid_date',
     ];
 
-    protected $validationMessages   = [
+    protected $validationMessages = [
         'title' => [
             'required'   => 'Title harus diisi',
             'min_length' => 'Title minimal 3 karakter',
@@ -57,14 +56,15 @@ class AchievementModel extends Model
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
-    // Callbacks
-    protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
-    protected $beforeFind     = [];
-    protected $afterFind      = [];
-    protected $beforeDelete   = [];
-    protected $afterDelete    = [];
+    // -------------------------------------------------------------------------
+    // Public API used by controllers
+    // -------------------------------------------------------------------------
+
+    /**
+     * Expose validation rules so controllers can call getValidationRules().
+     */
+    public function getValidationRules(array $options = []): array
+    {
+        return $this->validationRules;
+    }
 }

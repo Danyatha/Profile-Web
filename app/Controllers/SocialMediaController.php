@@ -3,85 +3,123 @@
 namespace App\Controllers;
 
 use App\Models\SocialMediaModel;
-use CodeIgniter\Controller;
 
-class SocialMediaController extends Controller
+class SocialMediaController extends BaseAdminController
 {
-    protected $socialMediaModel;
+    protected SocialMediaModel $model;
+
+    private const UPLOAD_PATH  = 'uploads/icons';
+    private const REDIRECT_URL = '/admin/social-media';
 
     public function __construct()
     {
-        $this->socialMediaModel = new SocialMediaModel();
+        $this->model = new SocialMediaModel();
     }
 
     public function index()
     {
-        $socialMediaLinks = $this->socialMediaModel->findAll();
-
-        $data = [
-            'title' => 'Social Media Links',
-            'subtitle' => 'Connect with me on social media platforms',
-            'socialMediaLinks' => $socialMediaLinks,
-        ];
-
-        return view('control/social-media-index', $data);
+        return view('control/social-media-index', [
+            'title'           => 'Social Media Links',
+            'subtitle'        => 'Connect with me on social media platforms',
+            'socialMediaLinks' => $this->model->findAll(),
+        ]);
     }
+
     public function create()
     {
-        $data = [
-            'platform_name' => $this->request->getPost('platform_name'),
-            'profile_url' => $this->request->getPost('profile_url'),
-        ];
-
-        $iconClass = $this->request->getFile('icon_class');
-        if ($iconClass && $iconClass->isValid() && !$iconClass->hasMoved()) {
-            $newName = $iconClass->getRandomName();
-            $iconClass->move(FCPATH . 'upload/icon_class/', $newName);
-            $data['icon_class'] = $newName;
-        }
-        $this->socialMediaModel->save($data);
-        return redirect()->to('/admin/social-media')->with('success', 'Social Media Berhasil Ditambahkan');
+        return view('control/social-media/create-social-media', [
+            'title'      => 'Tambah Social Media',
+            'validation' => \Config\Services::validation(),
+        ]);
     }
+
+    public function store()
+    {
+        if (! $this->validate($this->getValidationRules())) {
+            return $this->redirectWithValidation();
+        }
+
+        $data = $this->collectFormData();
+
+        $filename = $this->uploadSingleFile('icon_class', self::UPLOAD_PATH);
+        if ($filename) {
+            $data['icon_class'] = $filename;
+        }
+
+        $this->model->save($data);
+
+        return $this->redirectSuccess(self::REDIRECT_URL, 'Social Media berhasil ditambahkan');
+    }
+
     public function edit($id)
     {
-        $socialMedia = $this->socialMediaModel->find($id);
-        if (!$socialMedia) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
-        }
-        $data = [
-            'title' => 'Edit Social Media',
-            'social_media' => $socialMedia,
-            'validation' => \config\Services::validation()
-        ];
-        return view('control/social-media/edit-social-media');
+        return view('control/social-media/edit-social-media', [
+            'title'        => 'Edit Social Media',
+            'social_media' => $this->findOrFail($id),
+            'validation'   => \Config\Services::validation(),
+        ]);
     }
+
     public function update($id)
     {
-        $socialMedia = $this->socialMediaModel->find($id);
-        if (!$socialMedia) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
+        $socialMedia = $this->findOrFail($id);
+
+        if (! $this->validate($this->getValidationRules())) {
+            return $this->redirectWithValidation();
         }
-        $rules = [
-            'platform_name' => 'required|max_length[100]',
-            'profile_url' => 'required|valid_url|max_length[255]',
-        ];
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+
+        $data = $this->collectFormData();
+
+        $filename = $this->uploadSingleFile('icon_class', self::UPLOAD_PATH);
+        if ($filename) {
+            $this->deleteFile($socialMedia['icon_class'] ?? null, self::UPLOAD_PATH);
+            $data['icon_class'] = $filename;
         }
-        $data = [
-            'platform_name' => $this->request->getPost('platform_name'),
-            'profile_url' => $this->request->getPost('profile_url'),
-        ];
-        $this->socialMediaModel->update($data, ['id' => $id]);
-        return redirect()->to('/admin/social-media')->with('success', 'Social Media Berhasil Diubah');
+
+        // Fixed: update($id, $data) — original had arguments reversed
+        $this->model->update($id, $data);
+
+        return $this->redirectSuccess(self::REDIRECT_URL, 'Social Media berhasil diubah');
     }
+
     public function delete($id)
     {
-        $socialMedia = $this->socialMediaModel->find($id);
-        if (!$socialMedia) {
+        $socialMedia = $this->findOrFail($id);
+
+        $this->deleteFile($socialMedia['icon_class'] ?? null, self::UPLOAD_PATH);
+        $this->model->delete($id);
+
+        return $this->redirectSuccess(self::REDIRECT_URL, 'Social Media berhasil dihapus');
+    }
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    private function getValidationRules(): array
+    {
+        return [
+            'platform_name' => 'required|max_length[100]',
+            'profile_url'   => 'required|valid_url|max_length[255]',
+        ];
+    }
+
+    private function collectFormData(): array
+    {
+        return [
+            'platform_name' => $this->request->getPost('platform_name'),
+            'profile_url'   => $this->request->getPost('profile_url'),
+        ];
+    }
+
+    private function findOrFail(int|string $id): array
+    {
+        $row = $this->model->find($id);
+
+        if (! $row) {
             throw new \CodeIgniter\Exceptions\PageNotFoundException('Data tidak ditemukan');
         }
-        $this->socialMediaModel->delete($id);
-        return redirect()->to('/admin/social-media')->with('success', 'Social Media Berhasil Dihapus');
+
+        return $row;
     }
 }

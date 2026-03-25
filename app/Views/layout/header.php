@@ -2,7 +2,7 @@
     <div class="container">
         <div class="header-content">
             <div class="logo">
-                <img src="<?= base_url('images/logo-header-img.webp') ?>" alt="Logo" class="logo-image" />
+                <img src="<?= base_url('images/logo-header-img.webp') ?>" alt="Logo" class="logo-image" onclick="openFullSize(this)" />
                 <span class="logo-text">Dany Atha Najib</span>
             </div>
             <nav class="main-nav">
@@ -12,7 +12,7 @@
                     <li><a href="<?= base_url('portfolio') ?>">Portfolio</a></li>
                     <li><a href="<?= base_url('skills') ?>">Skills</a></li>
                     <li><a href="<?= base_url('work-experiences') ?>">Experiences</a></li>
-                    <li><a href="<?= base_url('contact') ?>">Contact</a></li>
+                    <li><a href="<?= base_url('social-media') ?>">Contact</a></li>
                 </ul>
             </nav>
             <div class="social-links">

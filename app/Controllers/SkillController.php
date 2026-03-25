@@ -3,149 +3,134 @@
 namespace App\Controllers;
 
 use App\Models\SkillModel;
-use CodeIgniter\Controller;
 
-class SkillController extends Controller
+class SkillController extends BaseAdminController
 {
-    protected $skillModel;
-    protected $helpers = ['form'];
+    protected SkillModel $model;
+
+    private const UPLOAD_PATH  = 'uploads/skills';
+    private const REDIRECT_URL = '/admin/skills';
 
     public function __construct()
     {
-        $this->skillModel = new SkillModel();
+        $this->model = new SkillModel();
     }
 
     public function index()
     {
-        $this->skillModel = new SkillModel();
-        $data = [
-            'title' => 'Daftar Skills',
-            'skills' => $this->skillModel->findAll()
-        ];
-        return view('control/skill-index', $data);
+        return view('control/skill-index', [
+            'title'  => 'Daftar Skills',
+            'skills' => $this->model->findAll(),
+        ]);
     }
 
-    // Menampilkan form tambah skill
     public function create()
     {
-        $data = [
-            'title' => 'Tambah Skill',
-            'validation' => \Config\Services::validation()
-        ];
-
-        return view('control/skill/create-skill', $data);
+        return view('control/skill/create-skill', [
+            'title'      => 'Tambah Skill',
+            'validation' => \Config\Services::validation(),
+        ]);
     }
 
     public function store()
     {
-        $rules = [
-            'skill_name' => 'required|max_length[100]',
-            'category'   => 'required|max_length[100]',
-            'description' => 'permit_empty|max_length[255]',
-            'image_path' => 'permit_empty|is_image[image_path]|mime_in[image_path,image/jpg,image/jpeg,image/png,image/webp]|max_size[image_path,2048]',
-        ];
+        $rules = array_merge($this->model->getValidationRules(), [
+            'image_path' => 'permit_empty|is_image[image_path]'
+                          . '|mime_in[image_path,image/jpg,image/jpeg,image/png,image/webp]'
+                          . '|max_size[image_path,2048]',
+        ]);
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        if (! $this->validate($rules)) {
+            return $this->redirectWithValidation();
         }
 
-        $data = [
-            'skill_name'  => $this->request->getPost('skill_name'),
-            'category'    => $this->request->getPost('category'),
-            'description' => $this->request->getPost('description'),
-        ];
-
-        $image = $this->request->getFile('image_path');
-        if ($image && $image->isValid() && !$image->hasMoved()) {
-            $newName = $image->getRandomName();
-            $image->move(FCPATH . 'uploads/skills/', $newName);
-            $data['image_path'] = $newName;
+        $data     = $this->collectFormData();
+        $filename = $this->uploadSingleFile('image_path', self::UPLOAD_PATH);
+        if ($filename) {
+            $data['image_path'] = $filename;
         }
 
-        $this->skillModel->save($data);
-        return redirect()->to('/admin/skills')->with('success', 'Skill berhasil ditambahkan');
+        $this->model->save($data);
+
+        return $this->redirectSuccess(self::REDIRECT_URL, 'Skill berhasil ditambahkan');
     }
 
-
-    // Menampilkan form edit skill
-    public function edit($id)
-    {
-        $skill = $this->skillModel->find($id);
-
-        if (!$skill) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Skill dengan ID ' . $id . ' tidak ditemukan');
-        }
-
-        $data = [
-            'title' => 'Edit Skill',
-            'skill' => $skill,
-            'validation' => \Config\Services::validation()
-        ];
-
-        return view('control/skill/edit-skill', $data);
-    }
-
-    // Mengupdate data skill
-    public function update($id)
-    {
-        $skill = $this->skillModel->find($id);
-
-        if (!$skill) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Skill dengan ID ' . $id . ' tidak ditemukan');
-        }
-
-        $rules = [
-            'skill_name' => 'required|max_length[100]',
-            'category'   => 'required|max_length[100]',
-            'description' => 'permit_empty|max_length[255]',
-        ];
-
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        $data = [
-            'skill_name'  => $this->request->getPost('skill_name'),
-            'category'    => $this->request->getPost('category'),
-            'description' => $this->request->getPost('description'),
-        ];
-
-        if ($this->skillModel->update($id, $data)) {
-            return redirect()->to('/admin/skills')->with('success', 'Skill berhasil diupdate');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Gagal mengupdate skill');
-        }
-    }
-
-    // Menghapus skill
-    public function delete($id)
-    {
-        $skill = $this->skillModel->find($id);
-
-        if (!$skill) {
-            return redirect()->to('/admin/skills')->with('error', 'Skill tidak ditemukan');
-        }
-
-        if ($this->skillModel->delete($id)) {
-            return redirect()->to('/admin/skills')->with('success', 'Skill berhasil dihapus');
-        } else {
-            return redirect()->to('/admin/skills')->with('error', 'Gagal menghapus skill');
-        }
-    }
-    // Menampilkan detail skill
     public function show($id)
     {
-        $skill = $this->skillModel->find($id);
+        return view('control/skill/show-skill', [
+            'title' => 'Detail Skill',
+            'skill' => $this->findOrFail($id),
+        ]);
+    }
 
-        if (!$skill) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Skill dengan ID ' . $id . ' tidak ditemukan');
+    public function edit($id)
+    {
+        return view('control/skill/edit-skill', [
+            'title'      => 'Edit Skill',
+            'skill'      => $this->findOrFail($id),
+            'validation' => \Config\Services::validation(),
+        ]);
+    }
+
+    public function update($id)
+    {
+        $skill = $this->findOrFail($id);
+
+        if (! $this->validate($this->model->getValidationRules())) {
+            return $this->redirectWithValidation();
         }
 
-        $data = [
-            'title' => 'Detail Skill',
-            'skill' => $skill
-        ];
+        $data     = $this->collectFormData();
+        $filename = $this->uploadSingleFile('image_path', self::UPLOAD_PATH);
 
-        return view('control/skill/show-skill', $data);
+        if ($filename) {
+            $this->deleteFile($skill['image_path'] ?? null, self::UPLOAD_PATH);
+            $data['image_path'] = $filename;
+        }
+
+        if ($this->model->update($id, $data)) {
+            return $this->redirectSuccess(self::REDIRECT_URL, 'Skill berhasil diupdate');
+        }
+
+        return $this->redirectError('Gagal mengupdate skill');
+    }
+
+    public function delete($id)
+    {
+        $skill = $this->findOrFail($id);
+
+        $this->deleteFile($skill['image_path'] ?? null, self::UPLOAD_PATH);
+
+        if ($this->model->delete($id)) {
+            return $this->redirectSuccess(self::REDIRECT_URL, 'Skill berhasil dihapus');
+        }
+
+        return redirect()->to(self::REDIRECT_URL)->with('error', 'Gagal menghapus skill');
+    }
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    private function collectFormData(): array
+    {
+        return [
+            'skill_name'  => $this->request->getPost('skill_name'),
+            'category'    => $this->request->getPost('category'),
+            'description' => $this->request->getPost('description'),
+        ];
+    }
+
+    private function findOrFail(int|string $id): array
+    {
+        $row = $this->model->find($id);
+
+        if (! $row) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException(
+                'Skill dengan ID ' . $id . ' tidak ditemukan'
+            );
+        }
+
+        return $row;
     }
 }

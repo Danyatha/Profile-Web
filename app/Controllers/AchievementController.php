@@ -3,130 +3,132 @@
 namespace App\Controllers;
 
 use App\Models\AchievementModel;
-use CodeIgniter\Controller;
 
-class AchievementController extends Controller
+class AchievementController extends BaseAdminController
 {
-    protected $achievementModel;
-    protected $helpers = ['form'];
+    protected AchievementModel $model;
+
+    private const UPLOAD_PATH  = 'uploads/achievements';
+    private const REDIRECT_URL = '/admin/achievement';
 
     public function __construct()
     {
-        $this->achievementModel = new AchievementModel();
+        $this->model = new AchievementModel();
     }
 
     public function index()
     {
-        $data = [
-            'title' => 'Daftar Achievements',
-            'achievements' => $this->achievementModel->orderBy('id', 'DESC')->findAll()
-        ];
-
-        return view('control/achievement-index', $data);
+        return view('control/achievement-index', [
+            'title'        => 'Daftar Achievements',
+            'achievements' => $this->model->orderBy('id', 'DESC')->findAll(),
+        ]);
     }
 
     public function create()
     {
-        $data = [
-            'title' => 'Tambah Achievement',
-            'validation' => \Config\Services::validation()
-        ];
-
-        return view('control/achievement/create-achievement', $data);
+        return view('control/achievement/create-achievement', [
+            'title'      => 'Tambah Achievement',
+            'validation' => \Config\Services::validation(),
+        ]);
     }
 
     public function store()
     {
-        if (!$this->validate($this->achievementModel->validationRules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        if (! $this->validate($this->model->getValidationRules())) {
+            return $this->redirectWithValidation();
         }
 
-        $data = [
-            'title'       => $this->request->getPost('title'),
-            'event_name'  => $this->request->getPost('event_name'),
-            'achievement' => $this->request->getPost('achievement'),
-            'description' => $this->request->getPost('description'),
-            'start_date'  => $this->request->getPost('start_date'),
-            'end_date'    => $this->request->getPost('end_date'),
-        ];
+        $data = $this->collectFormData();
 
-        $image = $this->request->getFile('images_path');
-        if ($image && $image->isValid() && !$image->hasMoved()) {
-            $newName = $image->getRandomName();
-            $image->move(FCPATH . 'uploads/achievements/', $newName);
-            $data['images_path'] = $newName;
-        }
-        $this->achievementModel->save($data);
-        return redirect()->to('/admin/achievement')->with('success', 'Achievement berhasil ditambahkan');
-    }
-
-    public function edit($id)
-    {
-        $achievement = $this->achievementModel->find($id);
-
-        if (!$achievement) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        $filename = $this->uploadSingleFile('images_path', self::UPLOAD_PATH);
+        if ($filename) {
+            $data['images_path'] = $filename;
         }
 
-        $data = [
-            'title' => 'Edit Achievement',
-            'achievement' => $achievement,
-            'validation' => \Config\Services::validation()
-        ];
+        $this->model->save($data);
 
-        return view('control/achievement/edit-achievement', $data);
-    }
-
-    public function update($id)
-    {
-        if (!$this->validate($this->achievementModel->validationRules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        $data = [
-            'title'       => $this->request->getPost('title'),
-            'event_name'  => $this->request->getPost('event_name'),
-            'achievement' => $this->request->getPost('achievement'),
-            'description' => $this->request->getPost('description'),
-            'start_date'  => $this->request->getPost('start_date'),
-            'end_date'    => $this->request->getPost('end_date'),
-        ];
-        $image = $this->request->getFile('images_path');
-        if ($image && $image->isValid() && !$image->hasMoved()) {
-            $newName = $image->getRandomName();
-            $image->move(FCPATH . 'uploads/achievements/', $newName);
-            $data['images_path'] = $newName;
-        }
-
-        if ($this->achievementModel->update($id, $data)) {
-            return redirect()->to('admin/achievement')->with('success', 'Data berhasil diupdate');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Data gagal diupdate');
-        }
-    }
-
-    public function delete($id)
-    {
-        if ($this->achievementModel->delete($id)) {
-            return redirect()->to('admin/achievement')->with('success', 'Data berhasil dihapus');
-        } else {
-            return redirect()->back()->with('error', 'Data gagal dihapus');
-        }
+        return $this->redirectSuccess(self::REDIRECT_URL, 'Achievement berhasil ditambahkan');
     }
 
     public function show($id)
     {
-        $achievement = $this->achievementModel->find($id);
+        return view('control/achievement/show-achievement', [
+            'title'       => 'Detail Achievement',
+            'achievement' => $this->findOrFail($id),
+        ]);
+    }
 
-        if (!$achievement) {
-            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+    public function edit($id)
+    {
+        return view('control/achievement/edit-achievement', [
+            'title'       => 'Edit Achievement',
+            'achievement' => $this->findOrFail($id),
+            'validation'  => \Config\Services::validation(),
+        ]);
+    }
+
+    public function update($id)
+    {
+        $achievement = $this->findOrFail($id);
+
+        if (! $this->validate($this->model->getValidationRules())) {
+            return $this->redirectWithValidation();
         }
 
-        $data = [
-            'title' => 'Detail Achievement',
-            'achievement' => $achievement
-        ];
+        $data = $this->collectFormData();
 
-        return view('control/achievement/show-achievement', $data);
+        $filename = $this->uploadSingleFile('images_path', self::UPLOAD_PATH);
+        if ($filename) {
+            // Remove old image when a new one is uploaded
+            $this->deleteFile($achievement['images_path'] ?? null, self::UPLOAD_PATH);
+            $data['images_path'] = $filename;
+        }
+
+        if ($this->model->update($id, $data)) {
+            return $this->redirectSuccess(self::REDIRECT_URL, 'Achievement berhasil diupdate');
+        }
+
+        return $this->redirectError('Gagal mengupdate achievement');
+    }
+
+    public function delete($id)
+    {
+        $achievement = $this->findOrFail($id);
+
+        $this->deleteFile($achievement['images_path'] ?? null, self::UPLOAD_PATH);
+        $this->model->delete($id);
+
+        return $this->redirectSuccess(self::REDIRECT_URL, 'Achievement berhasil dihapus');
+    }
+
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    /** Collect shared POST fields. */
+    private function collectFormData(): array
+    {
+        return [
+            'title'       => $this->request->getPost('title'),
+            'event_name'  => $this->request->getPost('event_name'),
+            'achievement' => $this->request->getPost('achievement'),
+            'description' => $this->request->getPost('description'),
+            'start_date'  => $this->request->getPost('start_date'),
+            'end_date'    => $this->request->getPost('end_date'),
+        ];
+    }
+
+    /** Find record or throw 404. */
+    private function findOrFail(int|string $id): array
+    {
+        $row = $this->model->find($id);
+
+        if (! $row) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound(
+                'Achievement tidak ditemukan'
+            );
+        }
+
+        return $row;
     }
 }

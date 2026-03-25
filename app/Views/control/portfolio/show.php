@@ -1,90 +1,81 @@
 <?= $this->extend('control/layout/admin_layout') ?>
 <?= $this->section('content') ?>
 
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-10 offset-md-1">
-            <div class="card shadow">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><?= esc($title) ?></h4>
-                    <div>
-                        <a href="<?= base_url('admin/portfolio/edit/' . $portfolio['id']) ?>" class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> Edit
-                        </a>
-                        <a href="<?= base_url('admin/portfolio/delete/' . $portfolio['id']) ?>"
-                            class="btn btn-danger btn-sm"
-                            onclick="return confirm('Yakin ingin menghapus portfolio ini?')">
-                            <i class="fas fa-trash"></i> Hapus
-                        </a>
-                    </div>
+<div class="row justify-content-center">
+    <div class="col-xl-10">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><?= esc($title) ?></h5>
+                <div class="d-flex gap-2">
+                    <a href="<?= base_url('admin/portfolio/edit/' . $portfolio['id']) ?>"
+                        class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit me-1"></i>Edit
+                    </a>
+                    <a href="<?= base_url('admin/portfolio/delete/' . $portfolio['id']) ?>"
+                        class="btn btn-danger btn-sm"
+                        onclick="return confirm('Yakin ingin menghapus portfolio ini?')">
+                        <i class="fas fa-trash me-1"></i>Hapus
+                    </a>
+                    <a href="<?= base_url('admin/portfolio') ?>" class="btn btn-secondary btn-sm">
+                        <i class="fas fa-arrow-left me-1"></i>Kembali
+                    </a>
                 </div>
-                <div class="card-body">
-                    <div class="row">
-                        <?php if ($portfolio['images_path']): ?>
-                            <div class="col-md-6 mb-4">
-                                <img src="<?= base_url($portfolio['images_path']) ?>"
-                                    alt="<?= esc($portfolio['project_name']) ?>"
-                                    class="img-fluid rounded shadow-sm">
-                            </div>
-                            <div class="col-md-6">
-                            <?php else: ?>
-                                <div class="col-md-12">
-                                <?php endif; ?>
-                                <h3 class="mb-3"><?= esc($portfolio['project_name']) ?></h3>
+            </div>
+            <div class="card-body">
 
-                                <?php if ($portfolio['technologies_used']): ?>
-                                    <div class="mb-3">
-                                        <h5 class="text-muted">Teknologi yang Digunakan:</h5>
-                                        <p><?= esc($portfolio['technologies_used']) ?></p>
-                                    </div>
-                                <?php endif; ?>
+                <!-- Fixed: was broken if/else div nesting in original -->
+                <div class="row g-4">
+                    <?php if (!empty($portfolio['images_path'])): ?>
+                        <div class="col-md-5">
+                            <img src="<?= base_url($portfolio['images_path']) ?>"
+                                alt="<?= esc($portfolio['project_name']) ?>"
+                                class="img-fluid rounded shadow-sm">
+                        </div>
+                        <div class="col-md-7">
+                        <?php else: ?>
+                            <div class="col-12">
+                            <?php endif; ?>
 
-                                <?php if ($portfolio['project_url']): ?>
-                                    <div class="mb-3">
-                                        <h5 class="text-muted">URL Project:</h5>
-                                        <a href="<?= esc($portfolio['project_url']) ?>"
-                                            target="_blank"
-                                            class="btn btn-primary">
-                                            <i class="fas fa-external-link-alt"></i> Kunjungi Website
-                                        </a>
-                                    </div>
-                                <?php endif; ?>
+                            <h3><?= esc($portfolio['project_name']) ?></h3>
 
+                            <?php if (!empty($portfolio['technologies_used'])): ?>
                                 <div class="mb-3">
-                                    <h5 class="text-muted">Dibuat:</h5>
-                                    <p><?= date('d F Y, H:i', strtotime($portfolio['created_at'])) ?> WIB</p>
-                                </div>
-
-                                <?php if ($portfolio['updated_at']): ?>
-                                    <div class="mb-3">
-                                        <h5 class="text-muted">Terakhir Update:</h5>
-                                        <p><?= date('d F Y, H:i', strtotime($portfolio['updated_at'])) ?> WIB</p>
-                                    </div>
-                                <?php endif; ?>
-                                </div>
-                            </div>
-
-                            <?php if ($portfolio['description']): ?>
-                                <div class="row mt-4">
-                                    <div class="col-md-12">
-                                        <h5 class="text-muted">Deskripsi Project:</h5>
-                                        <div class="card bg-light">
-                                            <div class="card-body">
-                                                <p class="mb-0"><?= nl2br(esc($portfolio['description'])) ?></p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <h6 class="text-muted">Teknologi yang Digunakan</h6>
+                                    <p><?= esc($portfolio['technologies_used']) ?></p>
                                 </div>
                             <?php endif; ?>
 
-                            <div class="row mt-4">
-                                <div class="col-md-12">
-                                    <a href="<?= base_url('admin/portfolio') ?>" class="btn btn-secondary">
-                                        <i class="fas fa-arrow-left"></i> Kembali ke Daftar Portfolio
+                            <?php if (!empty($portfolio['project_url'])): ?>
+                                <div class="mb-3">
+                                    <a href="<?= esc($portfolio['project_url']) ?>"
+                                        target="_blank" rel="noopener"
+                                        class="btn btn-primary">
+                                        <i class="fas fa-external-link-alt me-1"></i>Kunjungi Website
                                     </a>
                                 </div>
+                            <?php endif; ?>
+
+                            <p class="text-muted small mb-1">
+                                <i class="fas fa-clock me-1"></i>
+                                Dibuat: <?= date('d F Y, H:i', strtotime($portfolio['created_at'])) ?> WIB
+                            </p>
+                            <?php if (!empty($portfolio['updated_at'])): ?>
+                                <p class="text-muted small">
+                                    <i class="fas fa-pencil-alt me-1"></i>
+                                    Update: <?= date('d F Y, H:i', strtotime($portfolio['updated_at'])) ?> WIB
+                                </p>
+                            <?php endif; ?>
                             </div>
-                    </div>
+                        </div>
+
+                        <?php if (!empty($portfolio['description'])): ?>
+                            <hr>
+                            <h6 class="text-muted">Deskripsi Project</h6>
+                            <div class="bg-light rounded p-3">
+                                <p class="mb-0"><?= nl2br(esc($portfolio['description'])) ?></p>
+                            </div>
+                        <?php endif; ?>
+
                 </div>
             </div>
         </div>

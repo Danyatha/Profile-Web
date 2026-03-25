@@ -4,27 +4,31 @@ namespace App\Controllers;
 
 use App\Models\ProfileModel;
 
-class ProfileController extends BaseController
+class ProfileController extends BaseAdminController
 {
-    protected $profileModel;
+    protected ProfileModel $model;
 
     public function __construct()
     {
-        $this->profileModel = new ProfileModel();
+        $this->model = new ProfileModel();
     }
 
     public function index()
     {
-        $data = [
-            'profiles' => $this->profileModel->findAll(),
-            'title' => 'Profiles',
-        ];
-        return view('profiles/index', $data);
+        return view('profiles/index', [
+            'title'    => 'Profiles',
+            'profiles' => $this->model->findAll(),
+        ]);
     }
 
     public function show($id)
     {
-        $data['profile'] = $this->profileModel->find($id);
-        return view('profiles/show', $data);
+        $profile = $this->model->find($id);
+
+        if (! $profile) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Profile tidak ditemukan');
+        }
+
+        return view('profiles/show', ['profile' => $profile]);
     }
 }

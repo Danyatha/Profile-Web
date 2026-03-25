@@ -1,3 +1,4 @@
+<?php helper('text'); ?>
 <?= $this->extend('layout/default'); ?>
 <?= $this->section('content'); ?>
 
@@ -168,6 +169,183 @@
     </div>
 </section>
 
+
+<!-- ======================================================== -->
+<!-- DAILY JOURNAL / NEWS SECTION                             -->
+<!-- ======================================================== -->
+<section class="journal-section py-5" id="journal">
+    <div class="container">
+
+        <!-- Section Header -->
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+            <div>
+                <h2 class="fw-bold mb-1" style="color: var(--navy-blue);">
+                    Daily Journal
+                    <span style="color: orange; font-family:'Abril Fatface'; font-weight: 400;">& Notes</span>
+                </h2>
+                <p class="text-muted mb-0">Thoughts, updates, and things I'm currently working on.</p>
+            </div>
+            <a href="<?= base_url('journal') ?>" class="btn btn-outline-warning px-4">
+                View All &rarr;
+            </a>
+        </div>
+
+        <!-- Journal Cards Grid -->
+        <?php if (!empty($journals)): ?>
+            <div class="row g-4">
+                <?php foreach ($journals as $index => $journal): ?>
+
+                    <!-- Featured (first entry): wide card -->
+                    <?php if ($index === 0): ?>
+                        <div class="col-12">
+                            <a href="<?= base_url('journal/' . $journal['slug']) ?>" class="text-decoration-none">
+                                <div class="card shadow-sm border-0 journal-card-featured overflow-hidden">
+                                    <div class="row g-0 align-items-stretch">
+                                        <?php if (!empty($journal['cover_image'])): ?>
+                                            <div class="col-md-5">
+                                                <img src="<?= base_url($journal['cover_image']) ?>"
+                                                    alt="<?= esc($journal['title']) ?>"
+                                                    class="img-fluid h-100 w-100"
+                                                    style="object-fit:cover; min-height:260px;"
+                                                    loading="lazy">
+                                            </div>
+                                            <div class="col-md-7 d-flex flex-column p-4">
+                                            <?php else: ?>
+                                                <div class="col-12 d-flex flex-column p-4">
+                                                <?php endif; ?>
+                                                <!-- Tag / Category -->
+                                                <?php if (!empty($journal['category'])): ?>
+                                                    <span class="journal-tag mb-2"><?= esc($journal['category']) ?></span>
+                                                <?php endif; ?>
+
+                                                <h3 class="fw-bold mb-2" style="color: var(--navy-blue);">
+                                                    <?= esc($journal['title']) ?>
+                                                </h3>
+                                                <p class="text-muted flex-grow-1">
+                                                    <?= character_limiter(strip_tags($journal['content']), 200) ?>
+                                                </p>
+                                                <div class="d-flex align-items-center gap-3 mt-3">
+                                                    <small class="text-muted">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" class="me-1">
+                                                            <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5z" />
+                                                            <path d="M2.5 4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5H3a.5.5 0 0 1-.5-.5V4z" />
+                                                        </svg>
+                                                        <?= date('d M Y', strtotime($journal['created_at'])) ?>
+                                                    </small>
+                                                    <span class="btn btn-sm btn-primary ms-auto">Read More</span>
+                                                </div>
+                                                </div>
+                                            </div>
+                                    </div>
+                            </a>
+                        </div>
+
+                    <?php else: ?>
+                        <!-- Regular cards (index >= 1) — max 3 shown -->
+                        <?php if ($index <= 3): ?>
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <a href="<?= base_url('journal/' . $journal['slug']) ?>" class="text-decoration-none">
+                                    <div class="card h-100 shadow-sm border-0 journal-card overflow-hidden">
+                                        <?php if (!empty($journal['cover_image'])): ?>
+                                            <img src="<?= base_url($journal['cover_image']) ?>"
+                                                alt="<?= esc($journal['title']) ?>"
+                                                class="card-img-top"
+                                                style="height:180px; object-fit:cover;"
+                                                loading="lazy">
+                                        <?php else: ?>
+                                            <!-- Placeholder if no image -->
+                                            <div class="journal-no-img d-flex align-items-center justify-content-center" style="height:180px; background: linear-gradient(135deg, #f0f4ff 0%, #e8f0fe 100%);">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#b0bcd4" viewBox="0 0 16 16">
+                                                    <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z" />
+                                                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z" />
+                                                </svg>
+                                            </div>
+                                        <?php endif; ?>
+
+                                        <div class="card-body d-flex flex-column">
+                                            <?php if (!empty($journal['category'])): ?>
+                                                <span class="journal-tag mb-2"><?= esc($journal['category']) ?></span>
+                                            <?php endif; ?>
+                                            <h5 class="fw-bold mb-2" style="color: var(--navy-blue);">
+                                                <?= esc($journal['title']) ?>
+                                            </h5>
+                                            <p class="card-text text-muted flex-grow-1 small">
+                                                <?= character_limiter(strip_tags($journal['content']), 120) ?>
+                                            </p>
+                                            <small class="text-muted mt-2">
+                                                <?= date('d M Y', strtotime($journal['created_at'])) ?>
+                                            </small>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+
+                <?php endforeach; ?>
+            </div>
+
+        <?php else: ?>
+            <!-- Empty state -->
+            <div class="text-center py-5">
+                <div class="mb-3" style="opacity:.35;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="56" height="56" fill="#1a2e4a" viewBox="0 0 16 16">
+                        <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z" />
+                        <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z" />
+                    </svg>
+                </div>
+                <p class="text-muted">No journal entries yet. Check back soon!</p>
+            </div>
+        <?php endif; ?>
+
+    </div>
+</section>
+
+<style>
+    /* ---- Journal Section Styles ---- */
+    .journal-section {
+        background-color: #f8f9fb;
+        border-top: 1px solid #eaecf0;
+        border-bottom: 1px solid #eaecf0;
+    }
+
+    .journal-tag {
+        display: inline-block;
+        background-color: rgba(255, 165, 0, 0.12);
+        color: #b07800;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        padding: 2px 10px;
+        border-radius: 20px;
+        width: fit-content;
+    }
+
+    .journal-card {
+        border-radius: 12px;
+        transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .journal-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, .1) !important;
+    }
+
+    .journal-card-featured {
+        border-radius: 14px;
+        transition: box-shadow .2s ease;
+    }
+
+    .journal-card-featured:hover {
+        box-shadow: 0 10px 32px rgba(0, 0, 0, .12) !important;
+    }
+</style>
+<!-- ======================================================== -->
+<!-- END DAILY JOURNAL SECTION                               -->
+<!-- ======================================================== -->
+
+
 <!-- About Section -->
 <section class="about" id="about">
     <div class="container">
@@ -193,14 +371,5 @@
         </div>
     </div>
 </section>
-
-<!-- CTA Section -->
-<!-- <section class="cta" id="contact">
-    <div class="container">
-        <h2>Mari Berkolaborasi!</h2>
-        <p>Punya proyek menarik atau ingin sekadar ngobrol tentang teknologi? Saya selalu terbuka untuk peluang kolaborasi baru.</p>
-        <a href="#" class="btn">Hubungi Saya</a>
-    </div>
-</section> -->
 
 <?php $this->endSection(); ?>

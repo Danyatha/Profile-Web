@@ -3,196 +3,139 @@
 namespace App\Controllers;
 
 use App\Models\PortfolioModel;
-use CodeIgniter\Controller;
 
-class PortfolioController extends Controller
+class PortfolioController extends BaseAdminController
 {
-    protected $portfolioModel;
-    protected $helpers = ['form', 'url'];
+    protected PortfolioModel $model;
+
+    private const UPLOAD_PATH  = 'uploads/portfolio';
+    private const REDIRECT_URL = '/admin/portfolio';
 
     public function __construct()
     {
-        $this->portfolioModel = new PortfolioModel();
+        $this->model = new PortfolioModel();
     }
 
-    // Menampilkan semua portfolio
     public function index()
     {
-        $data = [
-            'title' => 'Daftar Portfolio',
-            'portfolios' => $this->portfolioModel->getAllPortfolios()
-        ];
-
-        return view('control/portfolio-index', $data);
+        return view('control/portfolio-index', [
+            'title'      => 'Daftar Portfolio',
+            'portfolios' => $this->model->getAllPortfolios(),
+        ]);
     }
 
-    // Menampilkan detail portfolio
     public function show($id)
     {
-        $portfolio = $this->portfolioModel->getPortfolioById($id);
-
-        if (!$portfolio) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Portfolio tidak ditemukan');
-        }
-
-        $data = [
-            'title' => 'Detail Portfolio',
-            'portfolio' => $portfolio
-        ];
-
-        return view('control/portfolio/show', $data);
+        return view('control/portfolio/show', [
+            'title'     => 'Detail Portfolio',
+            'portfolio' => $this->findOrFail($id),
+        ]);
     }
 
-    // Menampilkan form tambah portfolio
     public function create()
     {
-        $data = [
-            'title' => 'Tambah Portfolio',
-            'validation' => \Config\Services::validation()
-        ];
-
-        return view('control/portfolio/create', $data);
+        return view('control/portfolio/create', [
+            'title'      => 'Tambah Portfolio',
+            'validation' => \Config\Services::validation(),
+        ]);
     }
 
-    // Menyimpan data portfolio baru
     public function store()
     {
-        if (!$this->validate(
-            $this->portfolioModel->getValidationRules()
-        )) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        if (! $this->validate($this->model->getValidationRules())) {
+            return $this->redirectWithValidation();
         }
 
-        $imagePath = $this->uploadImage();
+        $data = $this->collectFormData();
 
-        $data = [
-            'project_name' => $this->request->getPost('project_name'),
-            'description' => $this->request->getPost('description'),
-            'technologies_used' => $this->request->getPost('technologies_used'),
-            'project_url' => $this->request->getPost('project_url'),
-            'images_path' => $imagePath
-        ];
-
-        if ($this->portfolioModel->insert($data)) {
-            return redirect()->to('/admin/portfolio')->with('success', 'Portfolio berhasil ditambahkan');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Gagal menambahkan portfolio');
+        $filename = $this->uploadSingleFile('images', self::UPLOAD_PATH);
+        if ($filename) {
+            $data['images_path'] = self::UPLOAD_PATH . '/' . $filename;
         }
+
+        if ($this->model->insert($data)) {
+            return $this->redirectSuccess(self::REDIRECT_URL, 'Portfolio berhasil ditambahkan');
+        }
+
+        return $this->redirectError('Gagal menambahkan portfolio');
     }
 
-    // Menampilkan form edit portfolio
     public function edit($id)
     {
-        $portfolio = $this->portfolioModel->getPortfolioById($id);
-
-        if (!$portfolio) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Portfolio tidak ditemukan');
-        }
-
-        $data = [
-            'title' => 'Edit Portfolio',
-            'portfolio' => $portfolio,
-            'validation' => \Config\Services::validation()
-        ];
-
-        return view('control/portfolio/edit', $data);
+        return view('control/portfolio/edit', [
+            'title'      => 'Edit Portfolio',
+            'portfolio'  => $this->findOrFail($id),
+            'validation' => \Config\Services::validation(),
+        ]);
     }
 
-    // Update data portfolio
     public function update($id)
     {
-        if (!$this->validate(
-            $this->portfolioModel->getValidationRules()
-        )) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+        $portfolio = $this->findOrFail($id);
+
+        if (! $this->validate($this->model->getValidationRules())) {
+            return $this->redirectWithValidation();
         }
 
-        $portfolio = $this->portfolioModel->getPortfolioById($id);
+        $data     = $this->collectFormData();
+        $filename = $this->uploadSingleFile('images', self::UPLOAD_PATH);
 
-        if (!$portfolio) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Portfolio tidak ditemukan');
+        if ($filename) {
+            // Remove old image before saving new one
+            $this->deleteFile(basename($portfolio['images_path'] ?? ''), self::UPLOAD_PATH);
+            $data['images_path'] = self::UPLOAD_PATH . '/' . $filename;
         }
 
-        $imagePath = $this->uploadImage();
-
-        // Jika ada upload gambar baru, hapus gambar lama
-        if ($imagePath && $portfolio['images_path']) {
-            $this->deleteOldImage($portfolio['images_path']);
+        if ($this->model->update($id, $data)) {
+            return $this->redirectSuccess(self::REDIRECT_URL, 'Portfolio berhasil diupdate');
         }
 
-        $data = [
-            'project_name' => $this->request->getPost('project_name'),
-            'description' => $this->request->getPost('description'),
-            'technologies_used' => $this->request->getPost('technologies_used'),
-            'project_url' => $this->request->getPost('project_url'),
-        ];
-
-        if ($imagePath) {
-            $data['images_path'] = $imagePath;
-        }
-
-        if ($this->portfolioModel->update($id, $data)) {
-            return redirect()->to('/admin/portfolio')->with('success', 'Portfolio berhasil diupdate');
-        } else {
-            return redirect()->back()->withInput()->with('error', 'Gagal mengupdate portfolio');
-        }
+        return $this->redirectError('Gagal mengupdate portfolio');
     }
 
-    // Hapus portfolio
     public function delete($id)
     {
-        $portfolio = $this->portfolioModel->getPortfolioById($id);
+        $portfolio = $this->findOrFail($id);
 
-        if (!$portfolio) {
-            throw new \CodeIgniter\Exceptions\PageNotFoundException('Portfolio tidak ditemukan');
-        }
+        $this->deleteFile(basename($portfolio['images_path'] ?? ''), self::UPLOAD_PATH);
+        $this->model->delete($id);
 
-        // Hapus gambar jika ada
-        if ($portfolio['images_path']) {
-            $this->deleteOldImage($portfolio['images_path']);
-        }
-
-        if ($this->portfolioModel->delete($id)) {
-            return redirect()->to('/admin/portfolio')->with('success', 'Portfolio berhasil dihapus');
-        } else {
-            return redirect()->back()->with('error', 'Gagal menghapus portfolio');
-        }
+        return $this->redirectSuccess(self::REDIRECT_URL, 'Portfolio berhasil dihapus');
     }
 
-    // Upload image helper
-    private function uploadImage()
-    {
-        $file = $this->request->getFile('images');
-
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-            $newName = $file->getRandomName();
-            $file->move(WRITEPATH . '../public/uploads/portfolio', $newName);
-            return 'uploads/portfolio/' . $newName;
-        }
-
-        return null;
-    }
-
-    // Delete old image helper
-    private function deleteOldImage($imagePath)
-    {
-        $fullPath = FCPATH . $imagePath;
-        if (file_exists($fullPath)) {
-            unlink($fullPath);
-        }
-    }
-
-    // Search portfolio
     public function search()
     {
         $keyword = $this->request->getGet('keyword');
 
-        $data = [
-            'title' => 'Hasil Pencarian Portfolio',
-            'portfolios' => $this->portfolioModel->searchPortfolios($keyword),
-            'keyword' => $keyword
-        ];
+        return view('control/portfolio-index', [
+            'title'      => 'Hasil Pencarian Portfolio',
+            'portfolios' => $this->model->searchPortfolios($keyword),
+            'keyword'    => $keyword,
+        ]);
+    }
 
-        return view('control/portfolio-index', $data);
+    // -------------------------------------------------------------------------
+    // Private helpers
+    // -------------------------------------------------------------------------
+
+    private function collectFormData(): array
+    {
+        return [
+            'project_name'      => $this->request->getPost('project_name'),
+            'description'       => $this->request->getPost('description'),
+            'technologies_used' => $this->request->getPost('technologies_used'),
+            'project_url'       => $this->request->getPost('project_url'),
+        ];
+    }
+
+    private function findOrFail(int|string $id): array
+    {
+        $row = $this->model->find($id);
+
+        if (! $row) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException('Portfolio tidak ditemukan');
+        }
+
+        return $row;
     }
 }

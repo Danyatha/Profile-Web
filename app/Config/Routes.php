@@ -14,7 +14,7 @@ $routes->group('admin', function ($routes) {
     $routes->get('dashboard', 'DashboardController::dashboard', ['filter' => 'auth']);
     $routes->get('portfolio', 'PortfolioController::index', ['filter' => 'auth']);
     $routes->get('skills', 'SkillController::index', ['filter' => 'auth']);
-    $routes->get('certificates', 'CertificatesController::index', ['filter' => 'auth']);
+    $routes->get('certificates', 'CertificationController::index', ['filter' => 'auth']);
     $routes->get('experiences', 'WorkExperienceController::index', ['filter' => 'auth']);
     $routes->group('experiences', function ($routes) {
         $routes->get('create', 'WorkExperienceController::create');
@@ -64,6 +64,15 @@ $routes->group('admin', function ($routes) {
         $routes->post('update/(:num)', 'PortfolioController::update/$1');
         $routes->get('delete/(:num)', 'PortfolioController::delete/$1');
     });
+    $routes->group('journals', function ($routes) {
+        $routes->get('/', 'JournalController::index');
+        $routes->get('create', 'JournalController::create');
+        $routes->post('store', 'JournalController::store');
+        $routes->get('edit/(:num)', 'JournalController::edit/$1');
+        $routes->post('update/(:num)', 'JournalController::update/$1');
+        $routes->post('delete/(:num)', 'JournalController::delete/$1');
+        $routes->post('toggle/(:num)', 'JournalController::togglePublish/$1');
+    });
     $routes->get('profile', 'ProfileController::index', ['filter' => 'auth']);
 });
 
@@ -82,3 +91,6 @@ $routes->get('social-media/(:num)', 'SocialMediaPublicController::detail/$1');
 $routes->get('portfolio', 'PortfolioPublicController::index');
 $routes->get('portfolio/(:num)', 'PortfolioPublicController::detail/$1');
 $routes->get('portfolio-filter', 'PortfolioPublicController::filter');
+
+$routes->get('journal',          'JournalPublicController::index');
+$routes->get('journal/(:any)',   'JournalPublicController::show/$1');

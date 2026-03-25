@@ -196,6 +196,12 @@
         color: #495057;
         line-height: 1.8;
         font-size: 0.95rem;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        /* jumlah baris */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+
     }
 
     /* Skills Badges */
@@ -238,7 +244,7 @@
     .gallery-carousel .carousel-item img {
         width: 100%;
         height: 100%;
-        object-fit: cover;
+        object-fit: contain;
         border-radius: 12px;
     }
 
