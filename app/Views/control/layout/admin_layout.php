@@ -263,6 +263,12 @@
                 </a>
             </li>
             <li class="nav-item">
+                <a class="nav-link <?= str_starts_with(uri_string(), 'admin/monitoring') ? 'active' : '' ?>"
+                    href="<?= base_url('admin/monitoring') ?>">
+                    <i class="fas fa-fw fa-chart-line"></i><span>Monitoring</span>
+                </a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link <?= uri_string() === 'admin/profile' ? 'active' : '' ?>"
                     href="<?= base_url('admin/profile') ?>">
                     <i class="fas fa-fw fa-user"></i><span>Profile</span>

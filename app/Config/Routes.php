@@ -73,6 +73,13 @@ $routes->group('admin', function ($routes) {
         $routes->post('delete/(:num)', 'JournalController::delete/$1');
         $routes->post('toggle/(:num)', 'JournalController::togglePublish/$1');
     });
+$routes->group('monitoring', ['filter' => 'auth'], function ($routes) {
+        $routes->get('/', 'MonitoringController::index');
+        $routes->get('chart-data', 'MonitoringController::chartData');
+        $routes->get('live-stats', 'MonitoringController::liveStats');
+        $routes->get('export-csv', 'MonitoringController::exportCsv');
+        $routes->post('purge', 'MonitoringController::purge');
+    });
     $routes->get('profile', 'ProfileController::index', ['filter' => 'auth']);
 });
 

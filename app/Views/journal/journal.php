@@ -48,14 +48,17 @@
                         <a href="<?= base_url('journal/' . $journal['slug']) ?>" class="text-decoration-none">
                             <div class="card h-100 shadow-sm border-0 journal-card overflow-hidden">
                                 <?php if (!empty($journal['cover_image'])): ?>
-                                    <img src="<?= base_url($journal['cover_image']) ?>"
-                                        alt="<?= esc($journal['title']) ?>"
-                                        class="card-img-top"
-                                        style="height:200px; object-fit:cover;"
-                                        loading="lazy">
+                                    <div class="journal-cover">
+                                        <img src="<?= base_url($journal['cover_image']) ?>"
+                                            alt="" aria-hidden="true"
+                                            class="journal-cover-bg" loading="lazy">
+                                        <img src="<?= base_url($journal['cover_image']) ?>"
+                                            alt="<?= esc($journal['title']) ?>"
+                                            class="journal-cover-img" loading="lazy">
+                                    </div>
                                 <?php else: ?>
                                     <div class="d-flex align-items-center justify-content-center"
-                                        style="height:200px; background:linear-gradient(135deg,#f0f4ff,#e8f0fe);">
+                                        style="aspect-ratio:16/10; background:linear-gradient(135deg,#f0f4ff,#e8f0fe);">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#b0bcd4" viewBox="0 0 16 16">
                                             <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z" />
                                             <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H4z" />
@@ -116,6 +119,39 @@
 </section>
 
 <style>
+    /* ── Cover frame: gambar utuh (tidak terpotong), tinggi seragam ── */
+    .journal-cover {
+        position: relative;
+        aspect-ratio: 16 / 10;
+        overflow: hidden;
+        background: #eef2f9;
+        isolation: isolate;
+    }
+
+    .journal-cover-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(18px) saturate(1.1) brightness(.92);
+        transform: scale(1.18);
+        z-index: 0;
+    }
+
+    .journal-cover-img {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: 1;
+        transition: transform .3s ease;
+    }
+
+    .journal-card:hover .journal-cover-img {
+        transform: scale(1.03);
+    }
+
     .journal-tag {
         display: inline-block;
         background: rgba(255, 165, 0, .12);

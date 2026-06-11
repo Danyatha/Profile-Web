@@ -37,10 +37,12 @@
 
         <!-- Cover Image -->
         <?php if (!empty($journal['cover_image'])): ?>
-            <img src="<?= base_url($journal['cover_image']) ?>"
-                alt="<?= esc($journal['title']) ?>"
-                class="img-fluid rounded-3 mb-4 w-100"
-                style="max-height:420px; object-fit:cover;">
+            <div class="journal-cover-hero rounded-3 mb-4">
+                <img src="<?= base_url($journal['cover_image']) ?>"
+                    alt="" aria-hidden="true" class="journal-cover-bg">
+                <img src="<?= base_url($journal['cover_image']) ?>"
+                    alt="<?= esc($journal['title']) ?>" class="journal-cover-img">
+            </div>
         <?php endif; ?>
 
         <!-- Content -->
@@ -67,9 +69,12 @@
                         <a href="<?= base_url('journal/' . $rel['slug']) ?>" class="text-decoration-none">
                             <div class="card h-100 shadow-sm border-0 journal-card overflow-hidden">
                                 <?php if (!empty($rel['cover_image'])): ?>
-                                    <img src="<?= base_url($rel['cover_image']) ?>"
-                                        class="card-img-top" style="height:160px;object-fit:cover;" loading="lazy"
-                                        alt="<?= esc($rel['title']) ?>">
+                                    <div class="journal-cover journal-cover-sm">
+                                        <img src="<?= base_url($rel['cover_image']) ?>" alt="" aria-hidden="true"
+                                            class="journal-cover-bg" loading="lazy">
+                                        <img src="<?= base_url($rel['cover_image']) ?>" alt="<?= esc($rel['title']) ?>"
+                                            class="journal-cover-img" loading="lazy">
+                                    </div>
                                 <?php endif; ?>
                                 <div class="card-body">
                                     <?php if (!empty($rel['category'])): ?>
@@ -88,6 +93,51 @@
 </section>
 
 <style>
+    /* ── Cover frame: gambar utuh, tidak terpotong ── */
+    .journal-cover,
+    .journal-cover-hero {
+        position: relative;
+        overflow: hidden;
+        background: #eef2f9;
+        isolation: isolate;
+    }
+
+    .journal-cover {
+        aspect-ratio: 16 / 10;
+    }
+
+    .journal-cover-hero {
+        max-height: 480px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .journal-cover-bg {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(20px) saturate(1.1) brightness(.9);
+        transform: scale(1.18);
+        z-index: 0;
+    }
+
+    .journal-cover-img {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        z-index: 1;
+    }
+
+    .journal-cover-hero .journal-cover-img {
+        width: auto;
+        max-width: 100%;
+        height: auto;
+        max-height: 480px;
+    }
+
     .journal-tag {
         background: rgba(255, 165, 0, .12);
         color: #b07800;

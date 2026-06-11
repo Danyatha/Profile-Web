@@ -97,10 +97,21 @@
         height: 100%;
         background: linear-gradient(to bottom,
                 transparent 0%,
-                var(--accent-silver) 10%,
-                rgba(255, 255, 255, 0.15) 50%,
-                var(--accent-silver) 90%,
+                rgba(255, 255, 255, 0.12) 10%,
+                rgba(255, 255, 255, 0.12) 90%,
                 transparent 100%);
+        overflow: hidden;
+    }
+
+    .timeline-line .timeline-progress {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0%;
+        background: linear-gradient(to bottom, var(--accent-silver), #ffffff);
+        box-shadow: 0 0 12px var(--glow);
+        transition: height 0.15s linear;
     }
 
     .timeline-item {
@@ -109,35 +120,21 @@
         align-items: center;
         margin-bottom: 50px;
         opacity: 0;
-        animation: fadeSlideIn 0.6s ease forwards;
+        transform: translateY(30px);
+        transition: opacity 0.6s ease, transform 0.6s ease;
     }
 
-    .timeline-item:nth-child(1) {
-        animation-delay: 0.1s;
+    .timeline-item.revealed {
+        opacity: 1;
+        transform: translateY(0);
     }
 
-    .timeline-item:nth-child(2) {
-        animation-delay: 0.25s;
+    .timeline-item:nth-child(odd).revealed {
+        transition-delay: 0.05s;
     }
 
-    .timeline-item:nth-child(3) {
-        animation-delay: 0.4s;
-    }
-
-    .timeline-item:nth-child(4) {
-        animation-delay: 0.55s;
-    }
-
-    @keyframes fadeSlideIn {
-        from {
-            opacity: 0;
-            transform: translateY(30px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .timeline-item:nth-child(even).revealed {
+        transition-delay: 0.15s;
     }
 
     .timeline-item:nth-child(odd) {
@@ -150,6 +147,7 @@
 
     .timeline-dot {
         position: absolute;
+        left: 50%;
         transform: translateX(-50%);
         width: 16px;
         height: 16px;
@@ -169,13 +167,12 @@
 
     /* ─── Cards ─── */
     .timeline-content {
-        width: 100%;
         padding: 28px;
         border-radius: 16px;
         cursor: pointer;
         transition: var(--transition-smooth);
         position: relative;
-        overflow: hidden;
+        overflow: visible;
         backdrop-filter: blur(10px);
     }
 
@@ -185,6 +182,28 @@
 
     .timeline-item:nth-child(even) .timeline-content {
         margin-left: auto;
+    }
+
+    /* Konektor kartu → garis tengah: garis tipis, bukan kotak */
+    .timeline-content::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 2px;
+        border-radius: 2px;
+        pointer-events: none;
+    }
+
+    .timeline-item:nth-child(odd) .timeline-content::before {
+        right: -44px;
+        background: linear-gradient(to right, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.3));
+    }
+
+    .timeline-item:nth-child(even) .timeline-content::before {
+        left: -44px;
+        background: linear-gradient(to left, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.3));
     }
 
     .timeline-content::after {
@@ -444,6 +463,89 @@
         border-color: var(--border-medium);
     }
 
+    /* ─── Carousel antar kegiatan (dalam modal) ─── */
+    .modal-content {
+        overflow: hidden;
+    }
+
+    .activity-track {
+        display: flex;
+        align-items: flex-start;
+        transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .activity-track .activity-card {
+        min-width: calc(100% - 32px);
+        width: calc(100% - 32px);
+    }
+
+    .activity-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 2px 16px 16px;
+    }
+
+    .activity-nav-btn {
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-primary);
+        padding: 9px 18px;
+        border-radius: 10px;
+        cursor: pointer;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: var(--transition-fast);
+        white-space: nowrap;
+    }
+
+    .activity-nav-btn:hover:not(:disabled) {
+        background: rgba(255, 255, 255, 0.12);
+        border-color: var(--border-medium);
+        transform: translateY(-1px);
+    }
+
+    .activity-nav-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    .activity-dots-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .activity-dots {
+        display: flex;
+        gap: 8px;
+    }
+
+    .activity-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 4px;
+        background: rgba(255, 255, 255, 0.25);
+        border: none;
+        padding: 0;
+        cursor: pointer;
+        transition: var(--transition-fast);
+    }
+
+    .activity-dot.active {
+        background: #fff;
+        width: 24px;
+    }
+
+    .activity-counter {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        letter-spacing: 0.04em;
+    }
+
     /* ─── Carousel ─── */
     .photo-carousel {
         position: relative;
@@ -657,7 +759,9 @@
     .summary-section {
         position: relative;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%) translateY(30px);
+        opacity: 0;
+        transition: opacity 0.6s ease, transform 0.6s ease;
         max-width: 760px;
         background: var(--surface-1);
         padding: 44px;
@@ -665,6 +769,11 @@
         box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
         border: 1px solid var(--border-subtle);
         margin-top: 70px;
+    }
+
+    .summary-section.revealed {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
     }
 
     .summary-section h2 {
@@ -709,29 +818,40 @@
         }
 
         .timeline-line {
-            display: none;
+            left: 14px;
+            transform: none;
         }
 
         .timeline-item {
-            flex-direction: column !important;
-            margin-bottom: 24px;
+            flex-direction: row !important;
+            margin-bottom: 28px;
+            padding-left: 44px;
         }
 
         .timeline-dot {
-            position: relative;
-            left: 0;
-            transform: none;
-            margin-bottom: 14px;
+            left: 14px;
+            top: 26px;
+            transform: translateX(-50%);
+            margin-bottom: 0;
         }
 
         .timeline-item:hover .timeline-dot {
-            transform: scale(1.3);
+            transform: translateX(-50%) scale(1.3);
         }
 
         .timeline-content {
             width: 100% !important;
             padding: 22px !important;
             margin: 0 !important;
+        }
+
+        .timeline-content::before {
+            left: -28px !important;
+            right: auto !important;
+            top: 26px;
+            transform: none;
+            width: 24px;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05)) !important;
         }
 
         .timeline-content:hover {
@@ -772,6 +892,21 @@
             margin: 10px;
         }
 
+        .activity-track .activity-card {
+            min-width: calc(100% - 20px);
+            width: calc(100% - 20px);
+        }
+
+        .activity-nav {
+            padding: 0 10px 12px;
+            gap: 8px;
+        }
+
+        .activity-nav-btn {
+            padding: 8px 12px;
+            font-size: 0.78rem;
+        }
+
         .summary-section {
             padding: 28px 22px;
         }
@@ -786,7 +921,9 @@
     </div>
 
     <div class="timeline">
-        <div class="timeline-line"></div>
+        <div class="timeline-line">
+            <div class="timeline-progress"></div>
+        </div>
 
         <!-- Year 1: 2021-2022 -->
         <div class="timeline-item">
@@ -1482,10 +1619,128 @@
         btn.textContent = expanded ? 'Sembunyikan ↑' : 'Lihat Deskripsi ↓';
     }
 
+    // ─── Carousel antar kegiatan (dalam modal) ───
+    const activityState = {};
+
+    function setupActivityCarousel(year) {
+        const modal = document.getElementById('modal-' + year);
+        const content = modal.querySelector('.modal-content');
+        if (content.dataset.carouselReady) return;
+
+        const cards = Array.from(content.children).filter(el => el.classList.contains('activity-card'));
+        if (cards.length === 0) {
+            content.dataset.carouselReady = '1';
+            return;
+        }
+
+        const track = document.createElement('div');
+        track.className = 'activity-track';
+        cards.forEach(c => track.appendChild(c));
+        content.appendChild(track);
+
+        activityState[year] = { index: 0, total: cards.length };
+
+        if (cards.length > 1) {
+            const nav = document.createElement('div');
+            nav.className = 'activity-nav';
+            nav.innerHTML = `
+                <button class="activity-nav-btn" data-dir="-1">‹ Sebelumnya</button>
+                <div class="activity-dots-wrap">
+                    <div class="activity-dots">
+                        ${cards.map((_, i) =>
+                            `<button class="activity-dot${i === 0 ? ' active' : ''}" data-idx="${i}" aria-label="Kegiatan ${i + 1}"></button>`
+                        ).join('')}
+                    </div>
+                    <span class="activity-counter">1 / ${cards.length}</span>
+                </div>
+                <button class="activity-nav-btn" data-dir="1">Berikutnya ›</button>
+            `;
+            content.appendChild(nav);
+
+            nav.querySelectorAll('.activity-nav-btn').forEach(btn =>
+                btn.addEventListener('click', () => moveActivity(year, parseInt(btn.dataset.dir, 10)))
+            );
+            nav.querySelectorAll('.activity-dot').forEach(dot =>
+                dot.addEventListener('click', () => goToActivity(year, parseInt(dot.dataset.idx, 10)))
+            );
+
+            // Swipe di layar sentuh
+            let startX = null;
+            track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+            track.addEventListener('touchend', e => {
+                if (startX === null) return;
+                const dx = e.changedTouches[0].clientX - startX;
+                if (Math.abs(dx) > 50) moveActivity(year, dx < 0 ? 1 : -1);
+                startX = null;
+            }, { passive: true });
+        }
+
+        content.dataset.carouselReady = '1';
+        updateActivity(year);
+    }
+
+    function collapseDescriptions(year) {
+        const modal = document.getElementById('modal-' + year);
+        modal.querySelectorAll('.activity-description-section.expanded').forEach(sec => {
+            sec.classList.remove('expanded');
+            sec.classList.add('collapsed');
+            const btn = sec.closest('.activity-card').querySelector('.expand-description-btn');
+            if (btn) btn.textContent = 'Lihat Deskripsi ↓';
+        });
+    }
+
+    function moveActivity(year, dir) {
+        const st = activityState[year];
+        if (!st) return;
+        const next = Math.max(0, Math.min(st.index + dir, st.total - 1));
+        if (next === st.index) return;
+        st.index = next;
+        collapseDescriptions(year);
+        updateActivity(year);
+    }
+
+    function goToActivity(year, idx) {
+        const st = activityState[year];
+        if (!st || idx === st.index) return;
+        st.index = idx;
+        collapseDescriptions(year);
+        updateActivity(year);
+    }
+
+    function updateActivity(year) {
+        const modal = document.getElementById('modal-' + year);
+        const st = activityState[year];
+        if (!modal || !st) return;
+
+        const track = modal.querySelector('.activity-track');
+        if (track) track.style.transform = `translateX(-${st.index * 100}%)`;
+
+        modal.querySelectorAll('.activity-dot').forEach((d, i) =>
+            d.classList.toggle('active', i === st.index)
+        );
+
+        const counter = modal.querySelector('.activity-counter');
+        if (counter) counter.textContent = `${st.index + 1} / ${st.total}`;
+
+        const btns = modal.querySelectorAll('.activity-nav-btn');
+        if (btns.length === 2) {
+            btns[0].disabled = st.index === 0;
+            btns[1].disabled = st.index === st.total - 1;
+        }
+
+        modal.scrollTop = 0;
+    }
+
     // Modal
     function openModal(year) {
         document.getElementById('modal-' + year).classList.add('active');
         document.body.style.overflow = 'hidden';
+        setupActivityCarousel(year);
+        if (activityState[year]) {
+            activityState[year].index = 0;
+            collapseDescriptions(year);
+            updateActivity(year);
+        }
         setTimeout(initAllCarousels, 100);
     }
 
@@ -1503,12 +1758,69 @@
     });
 
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            const active = document.querySelector('.modal.active');
-            if (active) {
-                active.classList.remove('active');
-                document.body.style.overflow = '';
-            }
+        const active = document.querySelector('.modal.active');
+
+        if (e.key === 'Escape' && active) {
+            active.classList.remove('active');
+            document.body.style.overflow = '';
+            return;
+        }
+
+        if (active && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+            const year = active.id.replace('modal-', '');
+            moveActivity(year, e.key === 'ArrowRight' ? 1 : -1);
         }
     });
+
+    // ─── Scroll reveal untuk timeline items ───
+    (function() {
+        const items = document.querySelectorAll('.timeline-item, .summary-section');
+
+        if (!('IntersectionObserver' in window)) {
+            items.forEach(el => el.classList.add('revealed'));
+            return;
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, {
+            threshold: 0.15,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        items.forEach(el => observer.observe(el));
+    })();
+
+    // ─── Progress line mengikuti scroll ───
+    (function() {
+        const timeline = document.querySelector('.timeline');
+        const progress = document.querySelector('.timeline-progress');
+        if (!timeline || !progress) return;
+
+        function updateProgress() {
+            const rect = timeline.getBoundingClientRect();
+            const viewportMid = window.innerHeight * 0.6;
+            const total = rect.height;
+            const passed = Math.min(Math.max(viewportMid - rect.top, 0), total);
+            progress.style.height = (passed / total * 100) + '%';
+        }
+
+        let ticking = false;
+        window.addEventListener('scroll', () => {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    updateProgress();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }, { passive: true });
+
+        updateProgress();
+    })();
 </script>
