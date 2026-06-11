@@ -147,7 +147,6 @@
 
     .timeline-dot {
         position: absolute;
-        left: 50%;
         transform: translateX(-50%);
         width: 16px;
         height: 16px;
