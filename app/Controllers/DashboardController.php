@@ -17,34 +17,70 @@ use App\Models\WorkExperienceModel;
  */
 class DashboardController extends BaseAdminController
 {
+    protected $achievementModel;
+    protected $certificationModel;
+    protected $portfolioModel;
+    protected $skillModel;
+    protected $workExperienceModel; 
+    
+
+    public function __construct()
+    {
+        $this->achievementModel = new AchievementModel();
+        $this->certificationModel = new CertificationModel();
+        $this->portfolioModel = new PortfolioModel();
+        $this->skillModel = new SkillModel();
+        $this->workExperienceModel = new WorkExperienceModel();
+    }
     public function dashboard()
     {
-        return view('control/dashboard', [
+        $data = [
             'title'               => 'Dashboard Admin',
-            'total_portfolio'     => (new PortfolioModel())->countAllResults(),
-            'total_skills'        => (new SkillModel())->countAllResults(),
-            'total_certificates'  => (new CertificationModel())->countAllResults(),
-            'total_experiences'   => (new WorkExperienceModel())->countAllResults(),
-        ]);
+            'total_portfolio'     => $this->portfolioModel->countAllResults(),
+            'total_skills'        => $this->skillModel->countAllResults(),
+            'total_certificates'  => $this->certificationModel->countAllResults(),
+            'total_experiences'   => $this->workExperienceModel->countAllResults(),
+        ];
+
+        return view('control/dashboard', $data);
     }
 
     public function portfolio()
     {
-        return view('control/portfolio', ['title' => 'Manage Portfolio']);
+        $data = [
+            'title' => 'Manage Portfolio',
+            'total_portfolio' => $this->portfolioModel->countAllResults(),
+        ];
+
+        return view('control/portfolio', $data);
     }
 
     public function skills()
     {
-        return view('admin/skills', ['title' => 'Manage Skills']);
+        $data = [
+            'title' => 'Manage Skills',
+            'total_skills' => $this->skillModel->countAllResults(),
+        ];
+
+        return view('admin/skills', $data);
     }
 
     public function experiences()
     {
-        return view('control/work-experience-index', ['title' => 'Manage Work Experiences']);
+        $data = [
+            'title' => 'Manage Work Experiences',
+            'total_experiences' => $this->workExperienceModel->countAllResults(),
+        ];
+
+        return view('control/work-experience-index', $data);
     }
 
     public function profile()
     {
-        return view('admin/profile', ['title' => 'Manage Profile']);
+        $data = [
+            'title' => 'Manage Profile',
+        ];
+
+        return view('admin/profile', $data);
     }
 }

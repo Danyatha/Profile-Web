@@ -23,14 +23,14 @@
 <?php endif; ?>
 
 <!-- Search -->
-<form method="get" action="<?= base_url('admin/journal') ?>" class="mb-4">
+<form method="get" action="<?= base_url('admin/journals') ?>" class="mb-4">
     <div class="input-group" style="max-width:380px;">
         <input type="text" name="search" class="form-control"
             placeholder="Cari judul atau kategori..."
             value="<?= esc($search ?? '') ?>">
         <button class="btn btn-outline-secondary" type="submit">Cari</button>
         <?php if (!empty($search)): ?>
-            <a href="<?= base_url('admin/journal') ?>" class="btn btn-outline-danger">✕</a>
+            <a href="<?= base_url('admin/journals') ?>" class="btn btn-outline-danger">✕</a>
         <?php endif; ?>
     </div>
 </form>
@@ -81,7 +81,7 @@
                             </td>
                             <td>
                                 <?php if (empty($j['deleted_at'])): ?>
-                                    <form action="<?= base_url('admin/journal/toggle/' . $j['id']) ?>" method="post" class="d-inline">
+                                    <form action="<?= base_url('admin/journals/toggle/' . $j['id']) ?>" method="post" class="d-inline">
                                         <?= csrf_field() ?>
                                         <button type="submit"
                                             class="btn btn-sm <?= $j['is_published'] ? 'btn-success' : 'btn-outline-secondary' ?>">
@@ -104,12 +104,12 @@
                                             title="Lihat">👁</a>
 
                                         <!-- Edit -->
-                                        <a href="<?= base_url('admin/journal/edit/' . $j['id']) ?>"
+                                        <a href="<?= base_url('admin/journals/edit/' . $j['id']) ?>"
                                             class="btn btn-sm btn-outline-primary"
                                             title="Edit">✏️</a>
 
                                         <!-- Soft Delete -->
-                                        <form action="<?= base_url('admin/journal/delete/' . $j['id']) ?>"
+                                        <form action="<?= base_url('admin/journals/delete/' . $j['id']) ?>"
                                             method="post"
                                             onsubmit="return confirm('Hapus jurnal ini?')">
                                             <?= csrf_field() ?>
@@ -118,13 +118,13 @@
 
                                     <?php else: ?>
                                         <!-- Restore -->
-                                        <form action="<?= base_url('admin/journal/restore/' . $j['id']) ?>" method="post">
+                                        <form action="<?= base_url('admin/journals/restore/' . $j['id']) ?>" method="post">
                                             <?= csrf_field() ?>
                                             <button type="submit" class="btn btn-sm btn-outline-success" title="Pulihkan">↩</button>
                                         </form>
 
                                         <!-- Force Delete -->
-                                        <form action="<?= base_url('admin/journal/force-delete/' . $j['id']) ?>"
+                                        <form action="<?= base_url('admin/journals/force-delete/' . $j['id']) ?>"
                                             method="post"
                                             onsubmit="return confirm('Hapus PERMANEN? Tidak bisa dikembalikan!')">
                                             <?= csrf_field() ?>

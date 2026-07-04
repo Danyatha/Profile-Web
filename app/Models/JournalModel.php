@@ -13,11 +13,8 @@ class JournalModel extends Model
     protected $useSoftDeletes   = true;
 
     protected $allowedFields = [
-        'title',
-        'slug',
-        'category',
-        'content',
-        'cover_image',
+        'title', 'slug', 'category', 'content', 'cover_image',
+        'document_file', 'document_name', 'document_type',
         'is_published',
     ];
 

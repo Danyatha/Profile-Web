@@ -6,7 +6,7 @@ use CodeIgniter\Database\Migration;
 
 class CreateCertificationsTable extends Migration
 {
-    public function up()
+    public function up(): void
     {
         $this->forge->addField([
             'id' => [
@@ -25,11 +25,15 @@ class CreateCertificationsTable extends Migration
                 'null'       => true,
             ],
             'issue_year' => [
-                'type'       => 'YEAR',
-                'null'       => true,
+                'type' => 'YEAR',
+                'null' => true,
             ],
             'description' => [
                 'type' => 'TEXT',
+                'null' => true,
+            ],
+            'images_path' => [
+                'type' => 'JSON',
                 'null' => true,
             ],
             'created_at' => [
@@ -40,17 +44,14 @@ class CreateCertificationsTable extends Migration
                 'type' => 'DATETIME',
                 'null' => true,
             ],
-            'images_path' => [
-                'type'       => 'JSON',
-                'null'       => true,
-            ],
         ]);
 
         $this->forge->addKey('id', true);
+        $this->forge->addKey('issue_year');          // handy for year-filter queries
         $this->forge->createTable('certifications');
     }
 
-    public function down()
+    public function down(): void
     {
         $this->forge->dropTable('certifications');
     }

@@ -20,32 +20,36 @@ class CertificationModel extends Model
         'images_path',
     ];
 
+    // Timestamps
     protected $useTimestamps = true;
     protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
     protected $updatedField  = 'updated_at';
 
     // Validation
-    // Note: 'valid_year' and 'valid_json' are custom rules; register them in
-    //       app/Config/Validation.php or replace with built-in alternatives.
     protected $validationRules = [
-        'name'        => 'required|max_length[150]',
-        'issuer'      => 'permit_empty|max_length[150]',
-        'issue_year'  => 'permit_empty|integer|greater_than[1900]|less_than_equal_to[2100]',
-        'description' => 'permit_empty',
+        'name'       => 'required|max_length[150]',
+        'issuer'     => 'permit_empty|max_length[150]',
+        'issue_year' => 'permit_empty|integer|greater_than[1900]|less_than_equal_to[2100]',
+        'description'=> 'permit_empty',
     ];
 
     protected $validationMessages = [
         'name' => [
-            'required'   => 'Nama sertifikasi harus diisi',
-            'max_length' => 'Nama sertifikasi maksimal 150 karakter',
+            'required'   => 'Nama sertifikasi harus diisi.',
+            'max_length' => 'Nama sertifikasi maksimal 150 karakter.',
+        ],
+        'issue_year' => [
+            'integer'           => 'Tahun terbit harus berupa angka.',
+            'greater_than'      => 'Tahun terbit tidak valid (min 1900).',
+            'less_than_equal_to'=> 'Tahun terbit tidak valid (maks 2100).',
         ],
     ];
 
     protected $skipValidation       = false;
     protected $cleanValidationRules = true;
 
-    // Callbacks: encode before write, decode after read
+    // Callbacks
     protected $allowCallbacks = true;
     protected $beforeInsert   = ['encodeImages'];
     protected $beforeUpdate   = ['encodeImages'];
@@ -60,20 +64,22 @@ class CertificationModel extends Model
         if (isset($data['data']['images_path']) && is_array($data['data']['images_path'])) {
             $data['data']['images_path'] = json_encode($data['data']['images_path']);
         }
+
         return $data;
     }
 
     protected function decodeImages(array $data): array
     {
-        if (! isset($data['data'])) {
+        if (empty($data['data'])) {
             return $data;
         }
 
-        // findAll returns a list; find returns a single row
-        if (isset($data['data'][0])) {
+        // findAll() returns a list; find($id) returns a single associative array
+        if (array_is_list($data['data'])) {
             foreach ($data['data'] as &$row) {
                 $row['images_path'] = $this->jsonDecodeField($row['images_path'] ?? null);
             }
+            unset($row);
         } else {
             $data['data']['images_path'] = $this->jsonDecodeField($data['data']['images_path'] ?? null);
         }
@@ -87,22 +93,28 @@ class CertificationModel extends Model
 
     public function getCertificationsByYear(int|string $year): array
     {
-        return $this->where('issue_year', $year)->findAll();
+        return $this->where('issue_year', $year)->orderBy('name', 'ASC')->findAll();
     }
 
     public function getCertificationsByIssuer(string $issuer): array
     {
-        return $this->like('issuer', $issuer)->findAll();
+        return $this->like('issuer', $issuer)->orderBy('issue_year', 'DESC')->findAll();
     }
 
     public function searchCertifications(string $keyword): array
     {
         return $this->groupStart()
-            ->like('name', $keyword)
-            ->orLike('issuer', $keyword)
-            ->orLike('description', $keyword)
-            ->groupEnd()
-            ->findAll();
+                    ->like('name', $keyword)
+                    ->orLike('issuer', $keyword)
+                    ->orLike('description', $keyword)
+                    ->groupEnd()
+                    ->orderBy('issue_year', 'DESC')
+                    ->findAll();
+    }
+
+    public function getAllOrderedByYear(): array
+    {
+        return $this->orderBy('issue_year', 'DESC')->orderBy('name', 'ASC')->findAll();
     }
 
     // -------------------------------------------------------------------------
@@ -114,6 +126,7 @@ class CertificationModel extends Model
         if (is_string($value)) {
             return json_decode($value, true) ?? [];
         }
+
         return is_array($value) ? $value : [];
     }
 }

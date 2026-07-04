@@ -10,18 +10,6 @@
         padding: 3rem 0;
     }
 
-    .hero-section .display-5 {
-        font-size: 2.5rem;
-        font-weight: 300;
-        color: #2c3e50;
-        margin-bottom: 0.5rem;
-    }
-
-    .hero-section .text-muted {
-        font-size: 1.1rem;
-        color: #6c757d;
-    }
-
     .certification-card {
         transition: all 0.3s ease;
         border: none;
@@ -59,7 +47,6 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.4s ease;
         filter: brightness(0.7);
     }
 
@@ -75,10 +62,8 @@
 
     .certification-overlay {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
         background: rgba(0, 0, 0, 0.5);
         display: flex;
         align-items: center;
@@ -102,14 +87,6 @@
         transform: scale(1);
     }
 
-    .view-detail-btn {
-        transition: all 0.3s ease;
-    }
-
-    .view-detail-btn:hover {
-        transform: translateX(5px);
-    }
-
     .modal-image-placeholder {
         width: 100%;
         height: 300px;
@@ -128,41 +105,27 @@
         border: none;
         border-radius: 15px;
     }
-
-    .badge {
-        padding: 0.5rem 1rem;
-        font-weight: 500;
-    }
-
-    .card-title {
-        color: #2c3e50;
-        line-height: 1.4;
-    }
-
-    .card-footer {
-        padding: 1rem 1.25rem;
-    }
 </style>
 
 <div class="container py-5">
     <div class="row mb-4">
         <div class="col-12">
-            <h1 class="fw-bold fs-2"><?= esc($title2) ?></h1>
-            <p class="text-muted fs-5"><?= esc($subtitle2) ?></p>
+            <h1 class="fw-bold fs-2"><?= esc($title2 ?? 'Sertifikasi') ?></h1>
+            <p class="text-muted fs-5"><?= esc($subtitle2 ?? '') ?></p>
             <hr class="my-4">
         </div>
     </div>
 
-    <?php if (!empty($certifications)): ?>
+    <?php if (! empty($certifications)): ?>
         <div class="row g-4">
             <?php foreach ($certifications as $certification): ?>
                 <div class="col-md-6 col-lg-4">
                     <div class="card h-100 shadow-sm certification-card">
                         <div class="certification-image-wrapper">
-                            <?php if (!empty($certification['images_path'])): ?>
-                                <img src="<?= base_url('uploads/certifications/' . esc($certification['images_path'])) ?>"
+                            <?php if (! empty($certification['images_path'][0])): ?>
+                                <img src="<?= base_url($certification['images_path'][0]) ?>"
                                     class="card-img-top certification-image"
-                                    alt="<?= esc($certification['title']) ?>">
+                                    alt="<?= esc($certification['name']) ?>">
                             <?php else: ?>
                                 <div class="card-img-top certification-image-placeholder">
                                     <i class="bi bi-award-fill"></i>
@@ -175,19 +138,16 @@
 
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge bg-primary"><?= esc($certification['certification']) ?></span>
-                                <?php if (!empty($certification['start_date'])): ?>
-                                    <small class="text-muted fw-semibold">
-                                        <?= date('Y', strtotime($certification['start_date'])) ?>
-                                    </small>
+                                <span class="badge bg-primary"><?= esc($certification['issuer'] ?? '-') ?></span>
+                                <?php if (! empty($certification['issue_year'])): ?>
+                                    <small class="text-muted fw-semibold"><?= esc($certification['issue_year']) ?></small>
                                 <?php endif; ?>
                             </div>
 
-                            <h5 class="card-title fw-bold mb-2"><?= esc($certification['title']) ?></h5>
+                            <h5 class="card-title fw-bold mb-2"><?= esc($certification['name']) ?></h5>
 
                             <p class="text-muted mb-3">
-                                <i class="bi bi-calendar-event me-1"></i>
-                                <?= esc($certification['event_name']) ?>
+                                <?= esc(mb_strimwidth($certification['description'] ?? '', 0, 100, '...')) ?>
                             </p>
                         </div>
 
@@ -206,7 +166,7 @@
             <div class="col-12">
                 <div class="alert alert-info text-center" role="alert">
                     <i class="bi bi-info-circle me-2"></i>
-                    Data not found. No certifications to display.
+                    Belum ada data sertifikasi.
                 </div>
             </div>
         </div>
@@ -231,25 +191,13 @@
                     </div>
                     <div class="col-md-7">
                         <div class="mb-3">
-                            <span class="badge bg-primary me-2" id="modalcertification"></span>
+                            <span class="badge bg-primary me-2" id="modalIssuer"></span>
                             <span class="badge bg-secondary" id="modalYear"></span>
                         </div>
 
                         <h6 class="fw-bold mb-2">
-                            <i class="bi bi-calendar-event text-primary me-2"></i>
-                            Event Name
-                        </h6>
-                        <p class="text-muted mb-3" id="modalEventName"></p>
-
-                        <h6 class="fw-bold mb-2">
-                            <i class="bi bi-clock text-primary me-2"></i>
-                            Period
-                        </h6>
-                        <p class="text-muted mb-3" id="modalPeriod"></p>
-
-                        <h6 class="fw-bold mb-2">
                             <i class="bi bi-file-text text-primary me-2"></i>
-                            Description
+                            Deskripsi
                         </h6>
                         <p class="text-muted" id="modalDescription"></p>
                     </div>
@@ -263,50 +211,25 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const viewDetailBtns = document.querySelectorAll('.view-detail-btn');
-        const modal = new bootstrap.Modal(document.getElementById('certificationModal'));
+        const modalEl = document.getElementById('certificationModal');
+        const modal = new bootstrap.Modal(modalEl);
 
-        viewDetailBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
-                const certification = JSON.parse(this.getAttribute('data-certification'));
+        viewDetailBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                const cert = JSON.parse(this.getAttribute('data-certification'));
 
-                // Set modal title
-                document.getElementById('certificationModalLabel').textContent = certification.title;
+                document.getElementById('certificationModalLabel').textContent = cert.name || '-';
+                document.getElementById('modalIssuer').textContent = cert.issuer || '-';
+                document.getElementById('modalYear').textContent = cert.issue_year || '-';
+                document.getElementById('modalDescription').textContent = cert.description || 'Tidak ada deskripsi.';
 
-                // Set badge
-                document.getElementById('modalcertification').textContent = certification.certification;
-
-                // Set year
-                if (certification.start_date) {
-                    const year = new Date(certification.start_date).getFullYear();
-                    document.getElementById('modalYear').textContent = year;
-                } else {
-                    document.getElementById('modalYear').textContent = '-';
-                }
-
-                // Set event name
-                document.getElementById('modalEventName').textContent = certification.event_name || '-';
-
-                // Set period
-                let period = '';
-                if (certification.start_date) {
-                    period = formatDate(certification.start_date);
-                }
-                if (certification.end_date) {
-                    period += ' - ' + formatDate(certification.end_date);
-                }
-                document.getElementById('modalPeriod').textContent = period || '-';
-
-                // Set description
-                document.getElementById('modalDescription').textContent = certification.description || 'Tidak ada deskripsi.';
-
-                // Set image
                 const modalImage = document.getElementById('modalImage');
                 const modalImagePlaceholder = document.getElementById('modalImagePlaceholder');
 
-                if (certification.images_path) {
-                    modalImage.src = '<?= base_url("uploads/certifications/") ?>' + certification.images_path;
+                if (cert.images_path && cert.images_path.length > 0) {
+                    modalImage.src = '<?= base_url() ?>' + cert.images_path[0];
                     modalImage.style.display = 'block';
                     modalImagePlaceholder.style.display = 'none';
                 } else {
@@ -314,19 +237,8 @@
                     modalImagePlaceholder.style.display = 'flex';
                 }
 
-                // Show modal
                 modal.show();
             });
         });
-
-        function formatDate(dateString) {
-            const options = {
-                day: 'numeric',
-                month: 'short',
-                year: 'numeric'
-            };
-            const date = new Date(dateString);
-            return date.toLocaleDateString('id-ID', options);
-        }
     });
 </script>

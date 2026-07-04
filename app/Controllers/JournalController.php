@@ -16,6 +16,19 @@ class JournalController extends BaseController
     private const ALLOWED_TYPES    = ['image/jpeg', 'image/png', 'image/webp'];
     private const MAX_SIZE_KB      = 2048; // 2 MB
 
+    // Konfigurasi upload dokumen lampiran
+    private const DOC_PATH         = 'uploads/journal/documents/';
+    private const DOC_TYPES        = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    ];
+    private const DOC_MAX_KB       = 10240; // 10 MB
+
     public function __construct()
     {
         $this->model = new JournalModel();
@@ -93,13 +106,32 @@ class JournalController extends BaseController
             $coverImage = $uploadResult['path'];
         }
 
+        // Handle upload dokumen lampiran
+        $docFile = null;
+        $docName = null;
+        $docType = null;
+        $doc     = $this->request->getFile('document_file');
+
+        if ($doc && $doc->isValid() && !$doc->hasMoved()) {
+            $docResult = $this->uploadDocument($doc);
+            if ($docResult['error']) {
+                return redirect()->back()->withInput()->with('error', $docResult['message']);
+            }
+            $docFile = $docResult['path'];
+            $docName = $docResult['name'];
+            $docType = $docResult['type'];
+        }
+
         $this->model->insert([
-            'title'        => $title,
-            'slug'         => $slug,
-            'category'     => $this->request->getPost('category') ?: null,
-            'content'      => $this->request->getPost('content'),
-            'cover_image'  => $coverImage,
-            'is_published' => (int) $this->request->getPost('is_published'),
+            'title'         => $title,
+            'slug'          => $slug,
+            'category'      => $this->request->getPost('category') ?: null,
+            'content'       => $this->request->getPost('content'),
+            'cover_image'   => $coverImage,
+            'document_file' => $docFile,
+            'document_name' => $docName,
+            'document_type' => $docType,
+            'is_published'  => (int) $this->request->getPost('is_published'),
         ]);
 
         return redirect()->to(base_url('admin/journals'))
@@ -125,7 +157,7 @@ class JournalController extends BaseController
             'validation' => \Config\Services::validation(),
         ];
 
-        return view('admin/journal/create', $data);
+        return view('control/journal/create', $data);
     }
 
     // ----------------------------------------------------------------
@@ -136,7 +168,7 @@ class JournalController extends BaseController
         $journal = $this->model->find($id);
 
         if (!$journal) {
-            return redirect()->to(base_url('admin/journal'))
+            return redirect()->to(base_url('admin/journals'))
                 ->with('error', 'Jurnal tidak ditemukan.');
         }
 
@@ -175,16 +207,42 @@ class JournalController extends BaseController
             $coverImage = null;
         }
 
+        // Default: pertahankan dokumen lama
+        $docFile = $journal['document_file'];
+        $docName = $journal['document_name'];
+        $docType = $journal['document_type'];
+
+        $doc = $this->request->getFile('document_file');
+        if ($doc && $doc->isValid() && !$doc->hasMoved()) {
+            $docResult = $this->uploadDocument($doc);
+            if ($docResult['error']) {
+                return redirect()->back()->withInput()->with('error', $docResult['message']);
+            }
+            $this->deleteDocument($journal['document_file']); // hapus lama
+            $docFile = $docResult['path'];
+            $docName = $docResult['name'];
+            $docType = $docResult['type'];
+        }
+
+        // Hapus dokumen jika user centang "hapus dokumen"
+        if ($this->request->getPost('remove_document') && $docFile) {
+            $this->deleteDocument($docFile);
+            $docFile = $docName = $docType = null;
+        }
+
         $this->model->update($id, [
-            'title'        => $title,
-            'slug'         => $slug,
-            'category'     => $this->request->getPost('category') ?: null,
-            'content'      => $this->request->getPost('content'),
-            'cover_image'  => $coverImage,
-            'is_published' => (int) $this->request->getPost('is_published'),
+            'title'         => $title,
+            'slug'          => $slug,
+            'category'      => $this->request->getPost('category') ?: null,
+            'content'       => $this->request->getPost('content'),
+            'cover_image'   => $coverImage,
+            'document_file' => $docFile,
+            'document_name' => $docName,
+            'document_type' => $docType,
+            'is_published'  => (int) $this->request->getPost('is_published'),
         ]);
 
-        return redirect()->to(base_url('admin/journal'))
+        return redirect()->to(base_url('admin/journals'))
             ->with('success', 'Jurnal berhasil diperbarui!');
     }
 
@@ -196,13 +254,13 @@ class JournalController extends BaseController
         $journal = $this->model->find($id);
 
         if (!$journal) {
-            return redirect()->to(base_url('admin/journal'))
+            return redirect()->to(base_url('admin/journals'))
                 ->with('error', 'Jurnal tidak ditemukan.');
         }
 
         $this->model->delete($id); // soft delete
 
-        return redirect()->to(base_url('admin/journal'))
+        return redirect()->to(base_url('admin/journals'))
             ->with('success', 'Jurnal berhasil dihapus (soft delete).');
     }
 
@@ -214,32 +272,33 @@ class JournalController extends BaseController
         $journal = $this->model->withDeleted()->find($id);
 
         if (!$journal || empty($journal['deleted_at'])) {
-            return redirect()->to(base_url('admin/journal'))
+            return redirect()->to(base_url('admin/journals'))
                 ->with('error', 'Jurnal tidak ditemukan atau belum dihapus.');
         }
 
         $this->model->update($id, ['deleted_at' => null]);
 
-        return redirect()->to(base_url('admin/journal'))
+        return redirect()->to(base_url('admin/journals'))
             ->with('success', 'Jurnal berhasil dipulihkan.');
     }
 
     // ----------------------------------------------------------------
-    // FORCE DELETE — Hapus permanen beserta gambarnya
+    // FORCE DELETE — Hapus permanen beserta gambar & dokumennya
     // ----------------------------------------------------------------
     public function forceDelete(int $id): RedirectResponse
     {
         $journal = $this->model->withDeleted()->find($id);
 
         if (!$journal) {
-            return redirect()->to(base_url('admin/journal'))
+            return redirect()->to(base_url('admin/journals'))
                 ->with('error', 'Jurnal tidak ditemukan.');
         }
 
         $this->deleteImage($journal['cover_image']);
+        $this->deleteDocument($journal['document_file']);
         $this->model->delete($id, true); // force delete
 
-        return redirect()->to(base_url('admin/journal'))
+        return redirect()->to(base_url('admin/journals'))
             ->with('success', 'Jurnal dihapus permanen.');
     }
 
@@ -251,7 +310,7 @@ class JournalController extends BaseController
         $journal = $this->model->find($id);
 
         if (!$journal) {
-            return redirect()->to(base_url('admin/journal'))
+            return redirect()->to(base_url('admin/journals'))
                 ->with('error', 'Jurnal tidak ditemukan.');
         }
 
@@ -260,12 +319,49 @@ class JournalController extends BaseController
 
         $msg = $newStatus ? 'Jurnal dipublish.' : 'Jurnal dijadikan draft.';
 
-        return redirect()->to(base_url('admin/journal'))->with('success', $msg);
+        return redirect()->to(base_url('admin/journals'))->with('success', $msg);
     }
 
     // ----------------------------------------------------------------
     // HELPERS PRIVATE
     // ----------------------------------------------------------------
+
+    /**
+     * Upload dokumen lampiran ke folder public/uploads/journal/documents/.
+     * Return array ['error' => bool, 'message' => string, 'path', 'name', 'type'].
+     */
+    private function uploadDocument($file): array
+    {
+        if (!in_array($file->getMimeType(), self::DOC_TYPES)) {
+            return ['error' => true, 'message' => 'Tipe dokumen tidak diizinkan (PDF/DOC/XLS/PPT).', 'path' => '', 'name' => '', 'type' => ''];
+        }
+        if ($file->getSizeByUnit('kb') > self::DOC_MAX_KB) {
+            return ['error' => true, 'message' => 'Ukuran dokumen maksimal 10MB.', 'path' => '', 'name' => '', 'type' => ''];
+        }
+
+        $original = $file->getClientName();
+        $ext      = strtolower($file->getClientExtension() ?: $file->getExtension());
+        $newName  = $file->getRandomName();
+        $file->move(FCPATH . self::DOC_PATH, $newName);
+
+        return [
+            'error'   => false,
+            'message' => 'Upload berhasil.',
+            'path'    => self::DOC_PATH . $newName,
+            'name'    => $original,
+            'type'    => $ext,
+        ];
+    }
+
+    /**
+     * Hapus file dokumen dari disk jika ada.
+     */
+    private function deleteDocument(?string $path): void
+    {
+        if ($path && file_exists(FCPATH . $path)) {
+            unlink(FCPATH . $path);
+        }
+    }
 
     /**
      * Upload gambar cover ke folder public/uploads/journal/.

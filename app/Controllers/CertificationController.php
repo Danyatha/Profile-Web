@@ -3,190 +3,347 @@
 namespace App\Controllers;
 
 use App\Models\CertificationModel;
-use CodeIgniter\RESTful\ResourceController;
-use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\Controller;
 use CodeIgniter\Exceptions\PageNotFoundException;
+use CodeIgniter\HTTP\RedirectResponse;
 
 /**
  * CertificationController
  *
- * REST resource controller. Images are stored as a JSON array via
- * CertificationModel callbacks (encodeImages / decodeImages).
+ * Handles admin CRUD for Certifications.
+ * Images are stored as a JSON array by CertificationModel callbacks.
+ *
+ * Routes (add to app/Config/Routes.php inside the 'admin' group):
+ *
+ *   $routes->group('certificates', function ($routes) {
+ *       $routes->get('/',              'CertificationController::index');
+ *       $routes->get('create',         'CertificationController::create');
+ *       $routes->post('store',         'CertificationController::store');
+ *       $routes->get('show/(:num)',    'CertificationController::show/$1');
+ *       $routes->get('edit/(:num)',    'CertificationController::edit/$1');
+ *       $routes->post('update/(:num)', 'CertificationController::update/$1');
+ *       $routes->get('delete/(:num)',  'CertificationController::delete/$1');
+ *       $routes->post('delete/(:num)', 'CertificationController::delete/$1');
+ *       $routes->post('delete-image',  'CertificationController::deleteImage');
+ *   });
  */
-class CertificationController extends ResourceController
+class CertificationController extends Controller
 {
-    protected $modelName = CertificationModel::class;
-    protected $format    = 'json';
+    private CertificationModel $model;
 
+    /** Folder name inside public/uploads/ */
     private const UPLOAD_DIR = 'certifications';
+
+    /** Allowed MIME types for uploaded images */
+    private const ALLOWED_MIME = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+
+    /** Max single-file size in KB */
+    private const MAX_FILE_KB = 2048;
 
     public function __construct()
     {
-        helper(['form', 'url']);
+        $this->model = new CertificationModel();
+        helper(['form', 'url', 'filesystem']);
     }
 
-    // GET /certifications
+    // =========================================================================
+    // READ
+    // =========================================================================
+
+    /**
+     * GET admin/certificates
+     * List all certifications ordered by year DESC.
+     */
     public function index()
     {
-        return $this->respond([
-            'status' => 'success',
-            'data'   => $this->model->findAll(),
+        $data = [
+            'title'          => 'Kelola Sertifikasi',
+            'certifications' => $this->model->getAllOrderedByYear(),
+        ];
+        
+        return view('control/certification-index', $data);
+    }
+
+    /**
+     * GET admin/certificates/show/:id
+     * Detail satu sertifikasi.
+     */
+    public function show(int $id)
+    {
+        return view('control/certification/show', [
+            'title'         => 'Detail Sertifikasi',
+            'certification' => $this->findOrFail($id),
         ]);
     }
 
-    // GET /certifications/:id
-    public function show($id = null)
-    {
-        $cert = $this->findOrFail($id);
+    // =========================================================================
+    // CREATE
+    // =========================================================================
 
-        return $this->respond(['status' => 'success', 'data' => $cert]);
-    }
-
-    // POST /certifications
+    /**
+     * GET admin/certificates/create
+     */
     public function create()
     {
-        $data = [
-            'name'        => $this->request->getPost('name'),
-            'issuer'      => $this->request->getPost('issuer'),
-            'issue_year'  => $this->request->getPost('issue_year'),
-            'description' => $this->request->getPost('description'),
-        ];
+        return view('control/certification/create', [
+            'title'      => 'Tambah Sertifikasi',
+            'validation' => \Config\Services::validation(),
+        ]);
+    }
 
-        $uploaded = $this->handleImageUploads();
-        if ($uploaded) {
-            $data['images_path'] = $uploaded;
+    /**
+     * POST admin/certificates/store
+     */
+    public function store()
+    {
+        $data = $this->collectFormData();
+
+        // Handle uploads; bail on error
+        [$paths, $uploadError] = $this->handleImageUploads();
+        if ($uploadError) {
+            return $this->jsonError($uploadError, 422);
+        }
+        if ($paths) {
+            $data['images_path'] = $paths;
         }
 
         if (! $this->model->insert($data)) {
-            return $this->fail($this->model->errors());
+            return $this->jsonError($this->model->errors(), 422);
         }
 
-        return $this->respondCreated([
-            'status'  => 'success',
-            'message' => 'Sertifikasi berhasil ditambahkan',
-            'data'    => $this->model->find($this->model->getInsertID()),
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => 'Sertifikasi berhasil ditambahkan.',
+                'data'    => $this->model->find($this->model->getInsertID()),
+            ]);
+        }
+
+        return redirect()->to(base_url('admin/certificates'))
+                         ->with('success', 'Sertifikasi berhasil ditambahkan.');
+    }
+
+    // =========================================================================
+    // UPDATE
+    // =========================================================================
+
+    /**
+     * GET admin/certificates/edit/:id
+     */
+    public function edit(int $id)
+    {
+        return view('control/certification/edit', [
+            'title'         => 'Edit Sertifikasi',
+            'certification' => $this->findOrFail($id),
+            'validation'    => \Config\Services::validation(),
         ]);
     }
 
-    // PUT/PATCH /certifications/:id
-    public function update($id = null)
+    /**
+     * POST admin/certificates/update/:id
+     */
+    public function update(int $id)
     {
         $cert = $this->findOrFail($id);
+        $data = $this->collectFormData($cert);   // fall back to existing values
 
-        // Accept both raw-input (PUT) and form-data (PATCH)
-        $raw  = $this->request->getRawInput();
-
-        $data = [
-            'name'        => $raw['name']        ?? $cert['name'],
-            'issuer'      => $raw['issuer']       ?? $cert['issuer'],
-            'issue_year'  => $raw['issue_year']   ?? $cert['issue_year'],
-            'description' => $raw['description']  ?? $cert['description'],
-        ];
-
-        $uploaded = $this->handleImageUploads();
-        if ($uploaded) {
-            $data['images_path'] = $uploaded;
+        // New uploads? Append to existing paths.
+        [$newPaths, $uploadError] = $this->handleImageUploads();
+        if ($uploadError) {
+            return $this->jsonError($uploadError, 422);
+        }
+        if ($newPaths) {
+            $existing = $cert['images_path'] ?? [];
+            $data['images_path'] = array_values(array_unique(array_merge($existing, $newPaths)));
         }
 
         if (! $this->model->update($id, $data)) {
-            return $this->fail($this->model->errors());
+            return $this->jsonError($this->model->errors(), 422);
         }
 
-        return $this->respond([
-            'status'  => 'success',
-            'message' => 'Sertifikasi berhasil diupdate',
-            'data'    => $this->model->find($id),
-        ]);
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => 'Sertifikasi berhasil diperbarui.',
+                'data'    => $this->model->find($id),
+            ]);
+        }
+
+        return redirect()->to(base_url('admin/certificates/show/' . $id))
+                         ->with('success', 'Sertifikasi berhasil diperbarui.');
     }
 
-    // DELETE /certifications/:id
-    public function delete($id = null)
+    // =========================================================================
+    // DELETE
+    // =========================================================================
+
+    /**
+     * GET|POST admin/certificates/delete/:id
+     * Supports both browser redirect and AJAX JSON response.
+     */
+    public function delete(int $id)
     {
         $cert = $this->findOrFail($id);
 
+        // Purge all image files
         $this->purgeImages($cert['images_path'] ?? []);
 
         if (! $this->model->delete($id)) {
-            return $this->fail('Gagal menghapus sertifikasi');
+            if ($this->request->isAJAX()) {
+                return $this->jsonError('Gagal menghapus sertifikasi.', 500);
+            }
+            return redirect()->back()->with('error', 'Gagal menghapus sertifikasi.');
         }
 
-        return $this->respondDeleted([
+        if ($this->request->isAJAX()) {
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => 'Sertifikasi berhasil dihapus.',
+            ]);
+        }
+
+        return redirect()->to(base_url('admin/certificates'))
+                         ->with('success', 'Sertifikasi berhasil dihapus.');
+    }
+
+    /**
+     * POST admin/certificates/delete-image
+     * Remove a single image from a certification record (AJAX).
+     *
+     * Body params:
+     *   cert_id  – certification ID
+     *   path     – relative path like "uploads/certifications/abc123.jpg"
+     */
+    public function deleteImage()
+    {
+        $certId = (int) $this->request->getPost('cert_id');
+        $path   = $this->request->getPost('path');
+
+        if (! $certId || ! $path) {
+            return $this->jsonError('Parameter tidak lengkap.', 400);
+        }
+
+        $cert   = $this->findOrFail($certId);
+        $images = $cert['images_path'] ?? [];
+
+        if (! in_array($path, $images, true)) {
+            return $this->jsonError('Gambar tidak ditemukan pada record ini.', 404);
+        }
+
+        // Remove file from disk
+        $full = FCPATH . $path;
+        if (file_exists($full)) {
+            unlink($full);
+        }
+
+        // Save updated list
+        $images = array_values(array_filter($images, fn ($p) => $p !== $path));
+        $this->model->update($certId, ['images_path' => $images]);
+
+        return $this->response->setJSON([
             'status'  => 'success',
-            'message' => 'Sertifikasi berhasil dihapus',
+            'message' => 'Gambar berhasil dihapus.',
         ]);
     }
 
-    // GET /certifications/search?q=keyword
-    public function search()
-    {
-        $keyword = $this->request->getGet('q');
-
-        if (! $keyword) {
-            return $this->fail('Keyword pencarian tidak boleh kosong');
-        }
-
-        return $this->respond([
-            'status' => 'success',
-            'data'   => $this->model->searchCertifications($keyword),
-        ]);
-    }
-
-    // GET /certifications/year/:year
-    public function getByYear($year = null)
-    {
-        return $this->respond([
-            'status' => 'success',
-            'data'   => $this->model->getCertificationsByYear($year),
-        ]);
-    }
-
-    // -------------------------------------------------------------------------
+    // =========================================================================
     // Private helpers
-    // -------------------------------------------------------------------------
+    // =========================================================================
 
-    /** Process multi-file upload, return array of stored paths (or empty). */
+    /**
+     * Collect and sanitize POST fields.
+     * When $existing is provided, missing fields fall back to existing values.
+     */
+    private function collectFormData(array $existing = []): array
+    {
+        return [
+            'name'        => $this->request->getPost('name')        ?? $existing['name']        ?? '',
+            'issuer'      => $this->request->getPost('issuer')       ?? $existing['issuer']       ?? null,
+            'issue_year'  => $this->request->getPost('issue_year')   ?? $existing['issue_year']   ?? null,
+            'description' => $this->request->getPost('description')  ?? $existing['description']  ?? null,
+        ];
+    }
+
+    /**
+     * Process multi-file upload from the "images[]" field.
+     * Returns [paths[], errorString|null].
+     */
     private function handleImageUploads(): array
     {
         $files   = $this->request->getFiles();
         $results = [];
 
         if (empty($files['images'])) {
-            return $results;
+            return [$results, null];
         }
 
-        $destDir = WRITEPATH . 'uploads/' . self::UPLOAD_DIR;
+        $destDir = FCPATH . 'uploads/' . self::UPLOAD_DIR;
+        if (! is_dir($destDir)) {
+            mkdir($destDir, 0755, true);
+        }
 
         foreach ($files['images'] as $image) {
-            if ($image->isValid() && ! $image->hasMoved()) {
-                $newName   = $image->getRandomName();
-                $image->move($destDir, $newName);
-                $results[] = 'uploads/' . self::UPLOAD_DIR . '/' . $newName;
+            // Skip the phantom "empty" entry browsers sometimes send
+            if (! $image->isValid() || $image->getError() === UPLOAD_ERR_NO_FILE) {
+                continue;
             }
+
+            if ($image->hasMoved()) {
+                continue;
+            }
+
+            // Validate MIME
+            if (! in_array($image->getMimeType(), self::ALLOWED_MIME, true)) {
+                return [[], 'Tipe file tidak didukung: ' . $image->getClientMimeType()];
+            }
+
+            // Validate size
+            if ($image->getSizeByUnit('kb') > self::MAX_FILE_KB) {
+                return [[], 'Ukuran file melebihi batas ' . self::MAX_FILE_KB . ' KB.'];
+            }
+
+            $newName = $image->getRandomName();
+            $image->move($destDir, $newName);
+            $results[] = 'uploads/' . self::UPLOAD_DIR . '/' . $newName;
         }
 
-        return $results;
+        return [$results, null];
     }
 
     /** Delete image files from disk. */
     private function purgeImages(array $paths): void
     {
         foreach ($paths as $path) {
-            $full = WRITEPATH . $path;
+            $full = FCPATH . $path;
             if (file_exists($full)) {
                 unlink($full);
             }
         }
     }
 
-    /** Return record or respond with 404. */
-    private function findOrFail(int|string|null $id): array
+    /**
+     * Return a record or throw 404.
+     * @throws PageNotFoundException
+     */
+    private function findOrFail(int $id): array
     {
         $record = $this->model->find($id);
-
         if (! $record) {
-            throw new PageNotFoundException('Sertifikasi tidak ditemukan');
+            throw new PageNotFoundException("Sertifikasi dengan ID {$id} tidak ditemukan.");
         }
 
         return $record;
+    }
+
+    /** Shortcut to return a JSON error response. */
+    private function jsonError(array|string $messages, int $statusCode = 400)
+    {
+        return $this->response
+                    ->setStatusCode($statusCode)
+                    ->setJSON([
+                        'status'   => 'error',
+                        'message'  => is_string($messages) ? $messages : implode(' ', $messages),
+                        'messages' => $messages,
+                    ]);
     }
 }

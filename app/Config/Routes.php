@@ -48,12 +48,23 @@ $routes->group('admin', function ($routes) {
         $routes->post('update/(:num)', 'AchievementController::update/$1');
         $routes->get('delete/(:num)', 'AchievementController::delete/$1');
     });
+    $routes->group('certificates', function ($routes) {
+        $routes->get('/', 'CertificationController::index');
+        $routes->get('create', 'CertificationController::create');
+        $routes->post('store', 'CertificationController::store');
+        $routes->get('show/(:num)', 'CertificationController::show/$1');
+        $routes->get('edit/(:num)', 'CertificationController::edit/$1');
+        $routes->post('update/(:num)', 'CertificationController::update/$1');
+        $routes->get('delete/(:num)', 'CertificationController::delete/$1');
+    });
     $routes->group('social-media', function ($routes) {
         $routes->get('/', 'SocialMediaController::index');
         $routes->post('create', 'SocialMediaController::create');
         $routes->get('edit/(:num)', 'SocialMediaController::edit/$1');
         $routes->post('update/(:num)', 'SocialMediaController::update/$1');
         $routes->get('delete/(:num)', 'SocialMediaController::delete/$1');
+        $routes->post('delete/(:num)', 'SocialMediaController::delete/$1');
+        $routes->post('store', 'SocialMediaController::store');
     });
     $routes->group('portfolio', function ($routes) {
         $routes->get('/', 'PortfolioController::index');
@@ -72,8 +83,11 @@ $routes->group('admin', function ($routes) {
         $routes->post('update/(:num)', 'JournalController::update/$1');
         $routes->post('delete/(:num)', 'JournalController::delete/$1');
         $routes->post('toggle/(:num)', 'JournalController::togglePublish/$1');
+        $routes->post('restore/(:num)', 'JournalController::restore/$1');
+        $routes->post('force-delete/(:num)', 'JournalController::forceDelete/$1');
+        $routes->post('upload-image', 'JournalController::uploadImage');
     });
-$routes->group('monitoring', ['filter' => 'auth'], function ($routes) {
+    $routes->group('monitoring', ['filter' => 'auth'], function ($routes) {
         $routes->get('/', 'MonitoringController::index');
         $routes->get('chart-data', 'MonitoringController::chartData');
         $routes->get('live-stats', 'MonitoringController::liveStats');
@@ -101,3 +115,5 @@ $routes->get('portfolio-filter', 'PortfolioPublicController::filter');
 
 $routes->get('journal',          'JournalPublicController::index');
 $routes->get('journal/(:any)',   'JournalPublicController::show/$1');
+$routes->get('journal/(:segment)', 'JournalPublicController::show/$1');
+$routes->get('file/(:segment)/(:segment)', 'FileController::serve/$1/$2');
